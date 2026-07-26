@@ -1,0 +1,131 @@
+{
+  "brand": {
+    "name": "Pressly",
+    "tagline": "Die Welt verstehen."
+  },
+  "nav": {
+    "home": "Start",
+    "explore": "Entdecken",
+    "saved": "Gespeichert",
+    "search": "Suchen",
+    "profile": "Profil",
+    "world": "Welt",
+    "business": "Wirtschaft",
+    "energy": "Energie",
+    "technology": "Technologie",
+    "culture": "Kultur",
+    "opinion": "Meinung",
+    "sections": "Ressorts"
+  },
+  "home": {
+    "breaking": "Eilmeldung",
+    "trending": "Im Trend",
+    "latest": "Aktuelles",
+    "editorsPicks": "Empfehlungen der Redaktion",
+    "videos": "Videos",
+    "opinion": "Meinung",
+    "countryExplorer": "Nach Land entdecken",
+    "newsletterTitle": "Ein ruhigerer Weg, die Welt zu verfolgen",
+    "newsletterBody": "Ein ruhiges Briefing. Kein Lärm, kein Clickbait.",
+    "newsletterCta": "Abonnieren"
+  },
+  "article": {
+    "readingTime": "{minutes} Min. Lesezeit",
+    "by": "Von {author}",
+    "published": "Veröffentlicht am {date}",
+    "updated": "Aktualisiert am {date}",
+    "related": "Verwandte Beiträge",
+    "sources": "Quellen",
+    "breaking": "Eilmeldung",
+    "backToHome": "Zurück zur Startseite"
+  },
+  "search": {
+    "placeholder": "Länder, Personen, Themen, Artikel suchen…",
+    "hint": "⌘K drücken zum Suchen",
+    "results": "Ergebnisse",
+    "noResultsTitle": "Nichts gefunden",
+    "noResultsBody": "Wir konnten nichts zu Ihrer Suche finden. Versuchen Sie ein anderes Land, Thema oder Stichwort.",
+    "filters": {
+      "country": "Land",
+      "language": "Sprache",
+      "topic": "Thema",
+      "author": "Autor",
+      "type": "Typ",
+      "date": "Datum"
+    },
+    "resultCount": "{count} Ergebnisse"
+  },
+  "country": {
+    "heading": "{country}",
+    "localStories": "Lokale Nachrichten",
+    "globalContext": "Globaler Kontext"
+  },
+  "language": {
+    "switch": "Sprache",
+    "region": "Region",
+    "change": "Sprache ändern"
+  },
+  "footer": {
+    "about": "Über Pressly",
+    "editorial": "Redaktionelle Standards",
+    "contact": "Kontakt",
+    "sections": "Ressorts",
+    "organisation": "Organisation",
+    "follow": "Folgen",
+    "rss": "RSS-Feed",
+    "rights": "© {year} Pressly. Alle Rechte vorbehalten."
+  },
+  "pages": {
+    "aboutTitle": "Über Pressly",
+    "aboutBody1": "Pressly ist ein globaler Nachrichten- und Analysedienst. Unser Auftrag ist es, das Erlebnis des Weltverstehens zu gestalten — nicht das Erlebnis des Herumsurfens.",
+    "aboutBody2": "Wir veröffentlichen auf Englisch, Arabisch, Französisch und Deutsch. Die Oberfläche folgt Ihrer Sprachwahl; jeder Beitrag bleibt in der Sprache, in der er verfasst wurde.",
+    "editorialTitle": "Redaktionelle Standards",
+    "editorialBody1": "Jeder Beitrag trägt einen namentlich genannten Autor und durchläuft vor der Veröffentlichung Prüfung und Schlussredaktion. Nichts erscheint ohne Freigabe durch die Redaktion.",
+    "editorialBody2": "Analysen werden als solche gekennzeichnet. Fotografien werden den Fotografinnen und Fotografen zugeschrieben, samt hinterlegter Lizenz.",
+    "contactTitle": "Kontakt",
+    "contactBody1": "Für Anfragen, Themenhinweise und Korrekturen wenden Sie sich an die Redaktion.",
+    "contactBody2": "Wenn Sie einen Fehler melden, nennen Sie uns bitte die Überschrift und worum es geht — wir prüfen das."
+  },
+  "common": {
+    "loading": "Wird geladen…",
+    "retry": "Erneut versuchen",
+    "readMore": "Weiterlesen"
+  },
+  "auth": {
+    "newsroomTitle": "Pressly-Redaktion",
+    "signInSubtitle": "Zum Fortfahren anmelden",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "signIn": "Anmelden",
+    "signingIn": "Anmeldung…",
+    "forgotPassword": "Passwort vergessen?",
+    "backToSignIn": "Zurück zur Anmeldung",
+    "resetRequestTitle": "Passwort zurücksetzen",
+    "resetRequestBody": "Geben Sie Ihre E-Mail-Adresse ein und wir senden Ihnen einen Link für ein neues Passwort.",
+    "sendResetLink": "Link senden",
+    "sending": "Wird gesendet…",
+    "resetRequestSent": "Wenn diese Adresse zu einem Pressly-Konto gehört, ist ein Link unterwegs.",
+    "newPasswordTitle": "Neues Passwort wählen",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "passwordMismatch": "Die Passwörter stimmen nicht überein.",
+    "passwordTooShort": "Mindestens 8 Zeichen verwenden.",
+    "updatePassword": "Passwort aktualisieren",
+    "updating": "Wird aktualisiert…",
+    "resetSuccess": "Ihr Passwort wurde aktualisiert.",
+    "missingToken": "Dieser Link ist unvollständig. Fordern Sie einen neuen an.",
+    "genericError": "Etwas ist schiefgelaufen."
+  },
+  "empty": {
+    "title": "Hier ist noch nichts",
+    "country": "Noch keine Artikel aus {country}. Versuchen Sie ein anderes Land oder sehen Sie sich die neuesten an.",
+    "topic": "Noch keine Artikel zu {topic}. Versuchen Sie ein anderes Thema oder sehen Sie sich die neuesten an.",
+    "homeTitle": "In der Redaktion ist es ruhig",
+    "homeBody": "Es wurden noch keine Artikel veröffentlicht. Schauen Sie bald wieder vorbei.",
+    "browseLatest": "Neueste ansehen",
+    "openNewsroom": "Redaktion öffnen"
+  },
+  "a11y": {
+    "skipToContent": "Zum Inhalt springen"
+  }
+}

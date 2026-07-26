@@ -1,0 +1,48 @@
+{
+  "name": "@pressly/web",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf .next .turbo *.tsbuildinfo",
+    "a11y": "node scripts/a11y.mjs",
+    "a11y:keyboard": "node scripts/a11y-keyboard.mjs",
+    "hover": "node scripts/hover-visible.mjs",
+    "design-system": "node scripts/design-system.mjs",
+    "responsive": "node scripts/responsive.mjs",
+    "perf": "node scripts/perf.mjs"
+  },
+  "dependencies": {
+    "@pressly/article-renderer": "workspace:*",
+    "@pressly/config": "workspace:*",
+    "@pressly/i18n": "workspace:*",
+    "@pressly/types": "workspace:*",
+    "@pressly/ui": "workspace:*",
+    "@tiptap/pm": "^2.9.1",
+    "@tiptap/react": "^2.9.1",
+    "@tiptap/starter-kit": "^2.9.1",
+    "clsx": "^2.1.1",
+    "dotenv": "^16.4.5",
+    "next": "^15.0.3",
+    "next-intl": "^3.25.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@axe-core/puppeteer": "^4.10.1",
+    "@types/node": "^22.9.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "autoprefixer": "^10.4.20",
+    "pngjs": "^7.0.0",
+    "postcss": "^8.4.49",
+    "puppeteer": "^24.9.0",
+    "tailwindcss": "^3.4.13",
+    "typescript": "^5.6.2"
+  }
+}

@@ -1,0 +1,47 @@
+# Local development infrastructure for Pressly.
+# Production runs the equivalent as managed Railway services.
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: pressly
+      POSTGRES_PASSWORD: pressly
+      POSTGRES_DB: pressly
+    ports:
+      # Host 5433 avoids clashing with a local Homebrew Postgres on 5432.
+      - "5435:5432"
+    volumes:
+      - pressly_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U pressly"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      # Host 6381 avoids a local Homebrew Redis on 6379 (and another project's
+      # on 6380). Sharing that instance meant Pressly's BullMQ queues sat in the
+      # same keyspace as an unrelated project's.
+      - "6381:6379"
+    volumes:
+      - pressly_redis:/data
+
+  meilisearch:
+    image: getmeili/meilisearch:v1.10
+    restart: unless-stopped
+    environment:
+      MEILI_MASTER_KEY: masterKey-change-me
+      MEILI_ENV: development
+    ports:
+      - "7700:7700"
+    volumes:
+      - pressly_meili:/meili_data
+
+volumes:
+  pressly_pg:
+  pressly_redis:
+  pressly_meili:

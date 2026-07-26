@@ -1,0 +1,166 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+
+    /* The sticky header's exact height, including its 1px bottom border.
+       Narrow screens carry a second row for the section links, so anything
+       pinning itself below the header must read this rather than hard-coding
+       4rem — the reading-progress bar sat at top-16 and overlapped the mobile
+       nav strip.
+
+       These are px because they include that border, and they must track the
+       real header: `pnpm --filter @pressly/web responsive` asserts the
+       progress bar lands exactly at the header's bottom edge, so drift fails
+       rather than going unnoticed. */
+    --header-h: 111px;
+  }
+
+  @media (min-width: 768px) {
+    :root {
+      --header-h: 65px;
+    }
+  }
+
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    background-color: theme('colors.background');
+    color: theme('colors.ink.DEFAULT');
+    font-family: theme('fontFamily.sans');
+  }
+
+  /* Arabic content uses the Arabic stack automatically. */
+  [dir='rtl'] body,
+  [lang='ar'] {
+    font-family: theme('fontFamily.arabic');
+  }
+
+  /* Quiet, editorial selection colour. */
+  ::selection {
+    background-color: theme('colors.accent.DEFAULT');
+    color: theme('colors.background');
+  }
+
+  /* Visible keyboard focus everywhere (WCAG 2.4.7). The design system reserves
+     the accent colour for interactive states, and focus is one of them.
+     :focus-visible keeps it off mouse clicks, so the calm look is preserved. */
+  :focus-visible {
+    outline: 2px solid theme('colors.accent.DEFAULT');
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Skip link: off-screen until focused, then pinned top-start. */
+  .skip-link {
+    position: absolute;
+    inset-inline-start: 1rem;
+    top: -100%;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0.375rem;
+    background-color: theme('colors.accent.DEFAULT');
+    color: theme('colors.background');
+    font-family: theme('fontFamily.sans');
+    font-size: 0.875rem;
+  }
+  .skip-link:focus {
+    top: 0.75rem;
+  }
+
+  /* Respect reduced motion everywhere. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      /* Delay must be zeroed too, not just duration. Entrance animations use
+         `fill-mode: both`, so a staggered item sits at its `from` frame —
+         opacity 0 — for the whole delay. Without this, a reader who asked for
+         no motion would watch content stay invisible for up to 270ms. */
+      animation-delay: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer utilities {
+  /* Article reading measure. */
+  .measure {
+    max-width: theme('maxWidth.reading');
+  }
+
+  /* A horizontal scroll strip with no visible scrollbar — used by the mobile
+     section nav, where a track would read as chrome in a design this quiet. */
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Staggers an entrance animation by list position. Pair with `animate-rise`
+     and set `--stagger` to the item's index. Capped at 6 steps (~270ms) so a
+     long grid still finishes arriving quickly — motion communicates order,
+     it shouldn't make the reader wait. */
+  .stagger {
+    animation-delay: calc(min(var(--stagger, 0), 6) * 45ms);
+  }
+
+  /* The reading-progress bar scales instead of resizing, so it animates on the
+     compositor. That means it grows from its origin, which has to flip in RTL. */
+  .progress-bar {
+    transform-origin: left center;
+  }
+  [dir='rtl'] .progress-bar {
+    transform-origin: right center;
+  }
+}
+
+/* Tiptap editor content — mirror the Reader's typography so writing feels like
+   reading. */
+.prose-editor:focus {
+  outline: none;
+}
+.prose-editor h2 {
+  font-family: theme('fontFamily.serif');
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-top: 2rem;
+  margin-bottom: 0.5rem;
+}
+.prose-editor h3 {
+  font-family: theme('fontFamily.serif');
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+.prose-editor p {
+  margin-top: 1rem;
+}
+.prose-editor ul {
+  list-style: disc;
+  padding-inline-start: 1.5rem;
+  margin-top: 1rem;
+}
+.prose-editor ol {
+  list-style: decimal;
+  padding-inline-start: 1.5rem;
+  margin-top: 1rem;
+}
+.prose-editor blockquote {
+  border-inline-start: 2px solid theme('colors.accent.DEFAULT');
+  padding-inline-start: 1rem;
+  margin: 1.5rem 0;
+  color: theme('colors.ink.muted');
+}

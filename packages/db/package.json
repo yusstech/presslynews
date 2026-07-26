@@ -1,0 +1,44 @@
+{
+  "name": "@pressly/db",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "prisma generate && tsc -p tsconfig.json",
+    "typecheck": "prisma generate && tsc --noEmit",
+    "generate": "prisma generate",
+    "migrate": "dotenv -e ../../.env -- prisma migrate dev",
+    "migrate:deploy": "dotenv -e ../../.env -- prisma migrate deploy",
+    "migrate:prod": "prisma migrate deploy",
+    "seed": "dotenv -e ../../.env -- tsx prisma/seed.ts",
+    "seed:taxonomy": "dotenv -e ../../.env -- tsx prisma/seed-taxonomy.ts",
+    "seed:taxonomy:prod": "tsx prisma/seed-taxonomy.ts",
+    "create-admin": "dotenv -e ../../.env -- tsx prisma/create-admin.ts",
+    "create-admin:prod": "tsx prisma/create-admin.ts",
+    "studio": "dotenv -e ../../.env -- prisma studio",
+    "clean": "rm -rf dist .turbo *.tsbuildinfo"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.20.0",
+    "@pressly/storage": "workspace:*",
+    "sharp": "^0.33.5"
+  },
+  "devDependencies": {
+    "bcryptjs": "^2.4.3",
+    "@types/bcryptjs": "^2.4.6",
+    "dotenv-cli": "^7.4.2",
+    "prisma": "^5.20.0",
+    "tsx": "^4.19.1",
+    "typescript": "^5.6.2"
+  }
+}

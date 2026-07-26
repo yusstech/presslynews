@@ -1,0 +1,131 @@
+{
+  "brand": {
+    "name": "Pressly",
+    "tagline": "Understand the world."
+  },
+  "nav": {
+    "home": "Home",
+    "explore": "Explore",
+    "saved": "Saved",
+    "search": "Search",
+    "profile": "Profile",
+    "world": "World",
+    "business": "Business",
+    "energy": "Energy",
+    "technology": "Technology",
+    "culture": "Culture",
+    "opinion": "Opinion",
+    "sections": "Sections"
+  },
+  "home": {
+    "breaking": "Breaking",
+    "trending": "Trending",
+    "latest": "Latest",
+    "editorsPicks": "Editor's Picks",
+    "videos": "Videos",
+    "opinion": "Opinion",
+    "countryExplorer": "Explore by country",
+    "newsletterTitle": "A calmer way to follow the world",
+    "newsletterBody": "One quiet briefing. No noise, no clickbait.",
+    "newsletterCta": "Subscribe"
+  },
+  "article": {
+    "readingTime": "{minutes} min read",
+    "by": "By {author}",
+    "published": "Published {date}",
+    "updated": "Updated {date}",
+    "related": "Related stories",
+    "sources": "Sources",
+    "breaking": "Breaking news",
+    "backToHome": "Back to home"
+  },
+  "search": {
+    "placeholder": "Search countries, people, topics, articles…",
+    "hint": "Press ⌘K to search",
+    "results": "Results",
+    "noResultsTitle": "Nothing found",
+    "noResultsBody": "We couldn't find anything matching your search. Try another country, topic, or keyword.",
+    "filters": {
+      "country": "Country",
+      "language": "Language",
+      "topic": "Topic",
+      "author": "Author",
+      "type": "Type",
+      "date": "Date"
+    },
+    "resultCount": "{count} results"
+  },
+  "country": {
+    "heading": "{country}",
+    "localStories": "Local stories",
+    "globalContext": "Global context"
+  },
+  "language": {
+    "switch": "Language",
+    "region": "Region",
+    "change": "Change language"
+  },
+  "footer": {
+    "about": "About Pressly",
+    "editorial": "Editorial standards",
+    "contact": "Contact",
+    "sections": "Sections",
+    "organisation": "Organisation",
+    "follow": "Follow",
+    "rss": "RSS feed",
+    "rights": "© {year} Pressly. All rights reserved."
+  },
+  "pages": {
+    "aboutTitle": "About Pressly",
+    "aboutBody1": "Pressly is a global news and intelligence service. Our brief is to design the experience of understanding the world — not the experience of browsing a website.",
+    "aboutBody2": "We publish in English, Arabic, French and German. The interface follows the language you choose; each story stays in the language it was reported in.",
+    "editorialTitle": "Editorial standards",
+    "editorialBody1": "Every story carries a named author and passes through review and copy-editing before it is published. Nothing reaches the Reader without an editor releasing it.",
+    "editorialBody2": "Analysis is labelled as analysis. Photography is credited to the photographer, with its licence recorded alongside it.",
+    "contactTitle": "Contact",
+    "contactBody1": "For newsroom enquiries, story tips and corrections, write to the editorial desk.",
+    "contactBody2": "If you are reporting an error, tell us the headline and what is wrong, and we will look into it."
+  },
+  "common": {
+    "loading": "Loading…",
+    "retry": "Try again",
+    "readMore": "Read more"
+  },
+  "auth": {
+    "newsroomTitle": "Pressly Newsroom",
+    "signInSubtitle": "Sign in to continue",
+    "email": "Email",
+    "password": "Password",
+    "signIn": "Sign in",
+    "signingIn": "Signing in…",
+    "forgotPassword": "Forgot your password?",
+    "backToSignIn": "Back to sign in",
+    "resetRequestTitle": "Reset your password",
+    "resetRequestBody": "Enter your email and we'll send you a link to choose a new password.",
+    "sendResetLink": "Send reset link",
+    "sending": "Sending…",
+    "resetRequestSent": "If that address belongs to a Pressly account, a reset link is on its way.",
+    "newPasswordTitle": "Choose a new password",
+    "newPassword": "New password",
+    "confirmPassword": "Confirm password",
+    "passwordMismatch": "Those passwords don't match.",
+    "passwordTooShort": "Use at least 8 characters.",
+    "updatePassword": "Update password",
+    "updating": "Updating…",
+    "resetSuccess": "Your password has been updated.",
+    "missingToken": "This reset link is incomplete. Request a new one.",
+    "genericError": "Something went wrong."
+  },
+  "empty": {
+    "title": "Nothing here yet",
+    "country": "No stories from {country} yet. Try another country, or browse the latest.",
+    "topic": "No stories on {topic} yet. Try another topic, or browse the latest.",
+    "homeTitle": "The newsroom is quiet",
+    "homeBody": "No stories have been published yet. Check back shortly.",
+    "browseLatest": "Browse the latest",
+    "openNewsroom": "Open the Newsroom"
+  },
+  "a11y": {
+    "skipToContent": "Skip to content"
+  }
+}

@@ -1,0 +1,221 @@
+// Pressly data model (v1).
+// Key principle: an article body is structured JSON (bodyJson), never raw HTML.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SUPER_ADMIN
+  EDITOR
+  JOURNALIST
+  COPY_EDITOR
+}
+
+enum ArticleStatus {
+  DRAFT
+  IN_REVIEW
+  REVISION_REQUESTED
+  READY_TO_PUBLISH
+  SCHEDULED
+  PUBLISHED
+  UPDATED
+  CORRECTED
+  ARCHIVED
+}
+
+enum ArticleType {
+  NEWS
+  ANALYSIS
+  OPINION
+  FEATURE
+  INTERVIEW
+  BRIEFING
+}
+
+enum MediaProcessingStatus {
+  PENDING
+  PROCESSING
+  READY
+  FAILED
+}
+
+model User {
+  id             String   @id @default(cuid())
+  email          String   @unique
+  hashedPassword String
+  name           String
+  slug           String   @unique
+  role           UserRole @default(JOURNALIST)
+  locale         String   @default("en")
+  avatarUrl      String?
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  authoredArticles Article[]             @relation("ArticleAuthor")
+  revisions        ArticleRevision[]
+  statusEvents     ArticleStatusEvent[]
+  uploadedMedia    Media[]
+  auditLogs        AuditLog[]
+  passwordResets   PasswordResetToken[]
+}
+
+/// Single-use password reset grants. Only the SHA-256 hash of the token is
+/// stored — a leaked table row cannot be replayed against the reset endpoint.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model Country {
+  id              String    @id @default(cuid())
+  code            String    @unique // ISO 3166-1 alpha-2, lowercase
+  name            String
+  region          String
+  defaultLanguage String    @default("en")
+  articles        Article[]
+  media           Media[]
+}
+
+model Language {
+  code      String @id // en, ar, fr, de
+  name      String
+  direction String @default("ltr") // ltr | rtl
+}
+
+model Topic {
+  id       String    @id @default(cuid())
+  slug     String    @unique
+  name     String
+  articles Article[]
+}
+
+model Media {
+  id              String                @id @default(cuid())
+  storageKey      String
+  filename        String
+  mimeType        String
+  size            Int                   @default(0)
+  width           Int?
+  height          Int?
+  alt             String?
+  caption         String?
+  photographer    String?
+  copyrightHolder String?
+  usageRights     String?
+  focalPointX     Float?
+  focalPointY     Float?
+  processingStatus MediaProcessingStatus @default(PENDING)
+  variants        Json                  @default("{}")
+
+  country    Country? @relation(fields: [countryId], references: [id])
+  countryId  String?
+  uploadedBy User?    @relation(fields: [uploadedById], references: [id])
+  uploadedById String?
+
+  heroForArticles Article[] @relation("ArticleHero")
+  createdAt       DateTime  @default(now())
+}
+
+model Article {
+  id             String        @id @default(cuid())
+  workingTitle   String
+  headline       String
+  subheadline    String?
+  slug           String        @unique
+  summary        String?
+  bodyJson       Json          @default("{\"type\":\"doc\",\"content\":[]}")
+  status         ArticleStatus @default(DRAFT)
+  articleType    ArticleType   @default(NEWS)
+  primaryLanguage String       @default("en")
+  readingTime    Int           @default(1)
+  isBreaking     Boolean       @default(false)
+  homepagePlacement Int?
+  version        Int           @default(1)
+
+  // SEO / social
+  seoTitle          String?
+  metaDescription   String?
+  socialHeadline    String?
+  socialDescription String?
+  /// og:image card rendered by the worker during publish fan-out.
+  socialImageUrl    String?
+
+  // scheduling
+  publishAt   DateTime?
+  publishedAt DateTime?
+
+  // relations
+  author       User?    @relation("ArticleAuthor", fields: [authorId], references: [id])
+  authorId     String?
+  country      Country? @relation(fields: [countryId], references: [id])
+  countryId    String?
+  topic        Topic?   @relation(fields: [topicId], references: [id])
+  topicId      String?
+  heroImage    Media?   @relation("ArticleHero", fields: [heroImageId], references: [id])
+  heroImageId  String?
+
+  revisions    ArticleRevision[]
+  statusEvents ArticleStatusEvent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, publishedAt])
+  @@index([countryId])
+  @@index([topicId])
+}
+
+model ArticleRevision {
+  id        String   @id @default(cuid())
+  article   Article  @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId String
+  bodyJson  Json
+  version   Int
+  editor    User?    @relation(fields: [editorId], references: [id])
+  editorId  String?
+  createdAt DateTime @default(now())
+
+  @@index([articleId])
+}
+
+model ArticleStatusEvent {
+  id         String         @id @default(cuid())
+  article    Article        @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  articleId  String
+  fromStatus ArticleStatus?
+  toStatus   ArticleStatus
+  actor      User?          @relation(fields: [actorId], references: [id])
+  actorId    String?
+  comment    String?
+  version    Int            @default(1)
+  createdAt  DateTime       @default(now())
+
+  @@index([articleId])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actor     User?    @relation(fields: [actorId], references: [id])
+  actorId   String?
+  action    String
+  entity    String
+  entityId  String?
+  metadata  Json     @default("{}")
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+}

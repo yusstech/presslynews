@@ -1,0 +1,20 @@
+{
+  "name": "@pressly/config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./tokens": "./src/tokens.ts",
+    "./tailwind-preset": "./src/tailwind-preset.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf .turbo *.tsbuildinfo"
+  },
+  "dependencies": {
+    "tailwindcss": "^3.4.13"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.2"
+  }
+}

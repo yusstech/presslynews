@@ -1,0 +1,36 @@
+# Keep the build context small and prevent secrets or host-built artefacts from
+# ever entering an image. node_modules is excluded deliberately: the image
+# installs its own, so a macOS build of sharp or the Prisma engines can never
+# leak into a Linux container.
+
+node_modules
+**/node_modules
+.pnpm-store
+
+# Build output — rebuilt inside the image
+**/dist
+**/.next
+**/.turbo
+**/build
+**/out
+*.tsbuildinfo
+
+# Secrets. .env.example is allowed through as documentation.
+.env
+.env.*
+!.env.example
+
+# Local media (the local-disk fallback); production uses R2
+apps/api/uploads
+
+# Not needed at runtime
+.git
+.github
+.vscode
+.idea
+**/.DS_Store
+*.log
+coverage
+ArticleFiles
+README.md
+docker-compose.yml
