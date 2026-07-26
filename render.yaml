@@ -24,8 +24,10 @@ services:
     buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build
     startCommand: pnpm --filter @pressly/web start
 
-    # Node 20, matching .nvmrc.
-    healthCheckPath: /en
+    # A probe that touches neither the database nor the middleware. `/en` was
+    # both: a sleeping Postgres could fail a healthy container, and the
+    # canonical-host redirect would answer the probe with a 308.
+    healthCheckPath: /healthz
 
     envVars:
       - key: NODE_VERSION
