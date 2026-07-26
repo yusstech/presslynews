@@ -1,12 +1,18 @@
 import { NextResponse } from 'next/server';
-import { searchArticles } from '@/data/seed';
+import { searchContent } from '@/lib/content-api';
+
+export const runtime = 'nodejs';
+// Results must be live — never serve a cached search response.
+export const dynamic = 'force-dynamic';
 
 /**
- * Search endpoint backing the ⌘K palette. In Phase 5 this is swapped for a
- * Meilisearch-backed API without changing the client.
+ * Backs the ⌘K palette.
+ *
+ * Previously this returned seed data and the palette called the NestJS
+ * Meilisearch endpoint instead. Both are gone: this is Postgres full-text
+ * search, in this app, and it returns a bare array like the API did.
  */
-export function GET(request: Request) {
-  const query = new URL(request.url).searchParams.get('q') ?? '';
-  const results = searchArticles(query).slice(0, 8);
-  return NextResponse.json({ results });
+export async function GET(request: Request) {
+  const q = new URL(request.url).searchParams.get('q') ?? '';
+  return NextResponse.json(await searchContent(q, 8));
 }

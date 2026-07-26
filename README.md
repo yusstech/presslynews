@@ -5,79 +5,65 @@ A calm, multilingual global news & intelligence platform.
 > "Design the experience of understanding the world — not the experience of
 > browsing a website."
 
-Two connected products in one monorepo:
+Two connected products in one app:
 
 - **Pressly Reader** — the public reading experience (calm, editorial, RTL-aware).
-- **Pressly Newsroom** — the private publishing system (editor, workflow, media).
+- **Pressly Newsroom** — the private publishing system (editor, media, publishing).
 
 ## Stack
 
-| Layer      | Choice                                             |
-| ---------- | -------------------------------------------------- |
-| Frontend   | Next.js (App Router, TS) + Tailwind + Radix        |
-| Editor     | Tiptap → structured JSON (never raw HTML)          |
-| Backend    | NestJS modular monolith                            |
-| Jobs       | BullMQ (Redis) worker                              |
-| Database   | PostgreSQL (Prisma)                                |
-| Search     | Meilisearch                                        |
-| Media      | Cloudflare R2 (S3-compatible)                      |
-| Email      | Resend (transactional)                             |
-| Infra      | Railway (Dockerized, portable)                     |
+| Layer    | Choice                                        |
+| -------- | --------------------------------------------- |
+| App      | Next.js (App Router, TS) + Tailwind + Radix   |
+| Editor   | Tiptap → structured JSON (never raw HTML)     |
+| Backend  | Next.js route handlers + Prisma               |
+| Database | PostgreSQL (Neon in production)               |
+| Search   | Postgres full-text (`tsvector` + trigger)     |
+| Media    | Cloudflare R2 (S3-compatible)                 |
+| Hosting  | Vercel                                        |
+
+There was a NestJS API, a BullMQ worker, Redis and Meilisearch. Pressly has one
+admin publishing their own stories, so a four-role newsroom with a nine-state
+review pipeline and a job queue was ceremony around a database write. Publishing
+now happens inline, search is a database trigger, and five deployed services
+became one.
 
 ## Layout
 
 ```
 apps/
-  web/     Next.js — Reader + Newsroom UI
-  api/     NestJS API
-  worker/  BullMQ background jobs
+  web/     the whole application
+    src/app/[locale]/(reader)     public pages
+    src/app/[locale]/(newsroom)   authenticated editor
+    src/app/api/                  the entire server surface
 packages/
   types/            shared TS types (article JSON, enums, locales)
   config/           design tokens + Tailwind preset
   i18n/             locale message catalogs (en, ar, fr, de)
-  article-renderer/ structured JSON → React (shared)
+  article-renderer/ structured JSON → React
   ui/               design-system components
-  db/               Prisma schema, migrations, seed + generated client
-  jobs/             BullMQ queue names & job payload contracts
-  search/           Meilisearch index (API reads, worker writes)
+  db/               Prisma schema, migrations, seed
   storage/          R2 / local-disk media storage
 ```
-
-The bottom four packages exist because the API and the worker are separate
-processes that must agree: one schema, one queue contract, one index mapping,
-one storage layout.
 
 ## Getting started
 
 ```bash
 cp .env.example .env      # fill in secrets
 pnpm install
-pnpm infra:up             # postgres + redis + meilisearch (docker)
+pnpm infra:up             # postgres (docker) — the only service
 pnpm db:migrate           # apply migrations
-pnpm db:seed              # demo users + taxonomy
-pnpm dev                  # run everything via turbo
+pnpm db:seed              # demo users + taxonomy + sample stories
+pnpm dev
 ```
 
-## Background jobs
-
-The worker (`apps/worker`) owns everything a publish must not wait on:
-
-| Job                  | Does                                                        |
-| -------------------- | ----------------------------------------------------------- |
-| `article.published`  | search index, social card, cache invalidation, author email  |
-| `article.unpublished`| drops the story from the index and Reader caches             |
-| `article.publish-due`| sweeps every 60s and releases `SCHEDULED` stories            |
-| `email.send`         | Resend delivery (logs to console when no API key is set)     |
-| `media.optimize`     | derives the AVIF variant off the upload path                 |
-
-Both degraded modes are deliberate and exercised: with no `RESEND_API_KEY` mail
-is rendered and logged instead of sent, and with Redis unreachable the API falls
-back to indexing inline so a publish still succeeds (notifications are skipped).
+Sign in to the Newsroom at `/en/newsroom/login` with `editor@pressly.dev` /
+`pressly123` (development seed only — production uses `db:create-admin`).
 
 ## Quality gates
 
-Six checks run against a live server (`pnpm dev` or `pnpm start` on :3000, with
-the API up). Each exists because something got through without it.
+Six checks run against a live server on :3000 (Postgres is the only backing
+service). Each exists because something got through without it.
 
 ```bash
 pnpm --filter @pressly/web a11y            # axe across 12 surfaces incl. ⌘K palette
@@ -102,18 +88,15 @@ shared component changed nothing on screen.
 
 ## Deploying
 
-Web on Vercel, API + worker + Postgres + Redis + Meilisearch on Railway, media
-on Cloudflare R2. Full walkthrough in [DEPLOYMENT.md](./DEPLOYMENT.md).
+The app on **Vercel**, Postgres on **Neon**, media on **Cloudflare R2**. Full
+walkthrough in [DEPLOYMENT.md](./DEPLOYMENT.md).
 
-```bash
-docker build -f apps/api/Dockerfile    -t pressly-api    .   # from the repo root
-docker build -f apps/worker/Dockerfile -t pressly-worker .
-```
+Three things that will bite if skipped:
 
-Two things that will bite if skipped:
-
-- **R2 is mandatory in production.** Railway filesystems are ephemeral, so the
-  local-disk media fallback loses every upload on redeploy.
+- **R2 is mandatory in production.** Serverless filesystems do not persist, so
+  the local-disk media fallback loses every upload on redeploy.
+- **Neon needs both connection strings.** `DATABASE_URL` pooled for queries,
+  `DIRECT_DATABASE_URL` unpooled for migrations.
 - **Never run `pnpm db:seed` in production** — it creates demo accounts with a
   published password. Use `db:seed:taxonomy` for reference data and
   `db:create-admin` for the first real account. The seed refuses to run under

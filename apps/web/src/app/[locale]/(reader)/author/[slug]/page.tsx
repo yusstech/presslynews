@@ -1,7 +1,7 @@
 import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { isLocale } from '@pressly/types';
-import { Container, Kicker } from '@pressly/ui';
+import { Container } from '@pressly/ui';
 import { ArticleCard } from '@/components/article-card';
 import { authors, getAllArticles, toCard } from '@/data/seed';
 
@@ -23,8 +23,7 @@ export default async function AuthorPage({
   return (
     <Container className="py-12">
       <header className="mb-10 border-b border-border pb-6">
-        <Kicker>{author.role.toLowerCase()}</Kicker>
-        <h1 className="mt-2 font-serif text-4xl font-semibold text-ink">{author.name}</h1>
+        <h1 className="font-serif text-h1 font-semibold text-ink">{author.name}</h1>
       </header>
       <div className="grid gap-x-8 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
         {articles.map((a) => (

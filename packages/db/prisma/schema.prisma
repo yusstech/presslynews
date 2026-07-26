@@ -6,26 +6,23 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  // Serverless Prisma needs a pooled URL for queries and a direct one for
+  // migrations. Locally both point at the same Postgres.
+  directUrl = env("DIRECT_DATABASE_URL")
 }
 
-enum UserRole {
-  SUPER_ADMIN
-  EDITOR
-  JOURNALIST
-  COPY_EDITOR
-}
-
+/// Publishing states.
+///
+/// This was nine values modelling a newsroom: IN_REVIEW, REVISION_REQUESTED,
+/// READY_TO_PUBLISH, UPDATED, CORRECTED. Pressly has one admin publishing their
+/// own work, so a review pipeline was ceremony with no reviewer. Roles went for
+/// the same reason — there is nobody to distinguish.
 enum ArticleStatus {
   DRAFT
-  IN_REVIEW
-  REVISION_REQUESTED
-  READY_TO_PUBLISH
   SCHEDULED
   PUBLISHED
-  UPDATED
-  CORRECTED
   ARCHIVED
 }
 
@@ -45,39 +42,25 @@ enum MediaProcessingStatus {
   FAILED
 }
 
+/// The admin, and the byline. There is no role column: with a single account
+/// every permission check answered the same way.
 model User {
   id             String   @id @default(cuid())
   email          String   @unique
   hashedPassword String
   name           String
   slug           String   @unique
-  role           UserRole @default(JOURNALIST)
   locale         String   @default("en")
   avatarUrl      String?
   active         Boolean  @default(true)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 
-  authoredArticles Article[]             @relation("ArticleAuthor")
+  authoredArticles Article[]            @relation("ArticleAuthor")
   revisions        ArticleRevision[]
   statusEvents     ArticleStatusEvent[]
   uploadedMedia    Media[]
   auditLogs        AuditLog[]
-  passwordResets   PasswordResetToken[]
-}
-
-/// Single-use password reset grants. Only the SHA-256 hash of the token is
-/// stored — a leaked table row cannot be replayed against the reset endpoint.
-model PasswordResetToken {
-  id        String    @id @default(cuid())
-  tokenHash String    @unique
-  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    String
-  expiresAt DateTime
-  usedAt    DateTime?
-  createdAt DateTime  @default(now())
-
-  @@index([userId])
 }
 
 model Country {
@@ -104,26 +87,26 @@ model Topic {
 }
 
 model Media {
-  id              String                @id @default(cuid())
-  storageKey      String
-  filename        String
-  mimeType        String
-  size            Int                   @default(0)
-  width           Int?
-  height          Int?
-  alt             String?
-  caption         String?
-  photographer    String?
-  copyrightHolder String?
-  usageRights     String?
-  focalPointX     Float?
-  focalPointY     Float?
+  id               String                @id @default(cuid())
+  storageKey       String
+  filename         String
+  mimeType         String
+  size             Int                   @default(0)
+  width            Int?
+  height           Int?
+  alt              String?
+  caption          String?
+  photographer     String?
+  copyrightHolder  String?
+  usageRights      String?
+  focalPointX      Float?
+  focalPointY      Float?
   processingStatus MediaProcessingStatus @default(PENDING)
-  variants        Json                  @default("{}")
+  variants         Json                  @default("{}")
 
-  country    Country? @relation(fields: [countryId], references: [id])
-  countryId  String?
-  uploadedBy User?    @relation(fields: [uploadedById], references: [id])
+  country      Country? @relation(fields: [countryId], references: [id])
+  countryId    String?
+  uploadedBy   User?    @relation(fields: [uploadedById], references: [id])
   uploadedById String?
 
   heroForArticles Article[] @relation("ArticleHero")
@@ -131,42 +114,50 @@ model Media {
 }
 
 model Article {
-  id             String        @id @default(cuid())
-  workingTitle   String
-  headline       String
-  subheadline    String?
-  slug           String        @unique
-  summary        String?
-  bodyJson       Json          @default("{\"type\":\"doc\",\"content\":[]}")
-  status         ArticleStatus @default(DRAFT)
-  articleType    ArticleType   @default(NEWS)
-  primaryLanguage String       @default("en")
-  readingTime    Int           @default(1)
-  isBreaking     Boolean       @default(false)
+  id                String        @id @default(cuid())
+  workingTitle      String
+  headline          String
+  subheadline       String?
+  slug              String        @unique
+  summary           String?
+  bodyJson          Json          @default("{\"type\":\"doc\",\"content\":[]}")
+  status            ArticleStatus @default(DRAFT)
+  articleType       ArticleType   @default(NEWS)
+  primaryLanguage   String        @default("en")
+  readingTime       Int           @default(1)
+  isBreaking        Boolean       @default(false)
   homepagePlacement Int?
-  version        Int           @default(1)
+  version           Int           @default(1)
 
   // SEO / social
   seoTitle          String?
   metaDescription   String?
   socialHeadline    String?
   socialDescription String?
-  /// og:image card rendered by the worker during publish fan-out.
+  /// Optional og:image override. Nothing generates cards now that the worker is
+  /// gone; `generateMetadata` falls back to the hero image, which is what the
+  /// Reader was already doing whenever this was null.
   socialImageUrl    String?
+
+  /// Full-text search vector, replacing Meilisearch. Maintained by a database
+  /// trigger (see the migration) rather than application code, so it stays
+  /// correct no matter which write path touches the row. Prisma cannot select
+  /// `Unsupported` columns — search runs through $queryRaw.
+  searchVector Unsupported("tsvector")?
 
   // scheduling
   publishAt   DateTime?
   publishedAt DateTime?
 
   // relations
-  author       User?    @relation("ArticleAuthor", fields: [authorId], references: [id])
-  authorId     String?
-  country      Country? @relation(fields: [countryId], references: [id])
-  countryId    String?
-  topic        Topic?   @relation(fields: [topicId], references: [id])
-  topicId      String?
-  heroImage    Media?   @relation("ArticleHero", fields: [heroImageId], references: [id])
-  heroImageId  String?
+  author      User?    @relation("ArticleAuthor", fields: [authorId], references: [id])
+  authorId    String?
+  country     Country? @relation(fields: [countryId], references: [id])
+  countryId   String?
+  topic       Topic?   @relation(fields: [topicId], references: [id])
+  topicId     String?
+  heroImage   Media?   @relation("ArticleHero", fields: [heroImageId], references: [id])
+  heroImageId String?
 
   revisions    ArticleRevision[]
   statusEvents ArticleStatusEvent[]
@@ -177,6 +168,7 @@ model Article {
   @@index([status, publishedAt])
   @@index([countryId])
   @@index([topicId])
+  @@index([searchVector], type: Gin)
 }
 
 model ArticleRevision {

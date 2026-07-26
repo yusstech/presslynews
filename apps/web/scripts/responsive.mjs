@@ -6,9 +6,10 @@
  * hit, and text below a readable size. Runs over both LTR and RTL because a
  * layout can be sound in English and broken in Arabic.
  *
- * Needs a live server on :3000 with the API up.
+ * Needs a live server on :3000 (Postgres is the only backing service).
  */
 import puppeteer from 'puppeteer';
+import { findArticleSlug } from './find-article.mjs';
 
 const BASE = process.env.BASE_URL ?? 'http://localhost:3000';
 
@@ -141,11 +142,9 @@ async function sweep(path, label, opts = {}) {
 await sweep('/en', 'home');
 await sweep('/ar', 'home (RTL)');
 
-const articles = await fetch('http://localhost:4000/api/content/articles?limit=1').then((r) =>
-  r.json(),
-);
-if (articles[0]?.slug) {
-  await sweep(`/en/article/${articles[0].slug}`, 'article');
+const articleSlug = await findArticleSlug(BASE);
+if (articleSlug) {
+  await sweep(`/en/article/${articleSlug}`, 'article');
 
   // `--header-h` is a hand-maintained number that must equal the real header
   // height, or the sticky reading-progress bar overlaps the mobile nav strip.
@@ -153,7 +152,7 @@ if (articles[0]?.slug) {
   for (const vp of WIDTHS) {
     const page = await browser.newPage();
     await page.setViewport({ width: vp.width, height: vp.height });
-    await page.goto(`${BASE}/en/article/${articles[0].slug}`, { waitUntil: 'networkidle0' });
+    await page.goto(`${BASE}/en/article/${articleSlug}`, { waitUntil: 'networkidle0' });
     const { headerH, declared } = await page.evaluate(() => ({
       headerH: Math.round(document.querySelector('header').getBoundingClientRect().height),
       declared: parseFloat(

@@ -20,10 +20,9 @@ export function NewsroomHeader() {
         </Link>
         {user && (
           <div className="flex items-center gap-4">
+            {/* The role badge went with the roles — with one account it only
+                ever said the same thing. */}
             <span className="hidden font-sans text-sm text-ink sm:inline">{user.name}</span>
-            <span className="rounded-full border border-border px-2 py-0.5 font-mono text-meta uppercase tracking-wide text-ink-muted">
-              {user.role.replace('_', ' ')}
-            </span>
             <Button variant="plain" size="sm" onClick={logout} className="text-ink-muted">
               Sign out
             </Button>

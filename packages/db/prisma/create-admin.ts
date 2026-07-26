@@ -55,12 +55,12 @@ async function main() {
     const existing = await prisma.user.findUnique({ where: { email } });
     const user = await prisma.user.upsert({
       where: { email },
-      create: { email, name, slug, role: 'SUPER_ADMIN', hashedPassword },
-      update: { role: 'SUPER_ADMIN', hashedPassword },
+      create: { email, name, slug, hashedPassword },
+      update: { hashedPassword, active: true },
     });
 
     console.log(
-      `${existing ? 'Updated' : 'Created'} SUPER_ADMIN ${user.email} — sign in at /newsroom/login`,
+      `${existing ? 'Updated' : 'Created'} ${user.email} — sign in at /newsroom/login`,
     );
   } finally {
     await prisma.$disconnect();

@@ -4,7 +4,7 @@
  */
 
 import type { ArticleDoc } from './article-body';
-import type { ArticleStatus, ArticleType, MediaProcessingStatus, UserRole } from './enums';
+import type { ArticleStatus, ArticleType, MediaProcessingStatus } from './enums';
 import type { Locale, TextDirection } from './locales';
 
 export interface AuthorSummary {
@@ -12,7 +12,6 @@ export interface AuthorSummary {
   name: string;
   slug: string;
   avatarUrl?: string;
-  role: UserRole;
 }
 
 export interface CountrySummary {

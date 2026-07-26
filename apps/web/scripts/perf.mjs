@@ -6,7 +6,7 @@
  * and this is what proves the browser is picking the right one rather than
  * pulling a 1600px hero onto a phone.
  *
- * Needs a live server on :3000 with the API up.
+ * Needs a live server on :3000 (Postgres is the only backing service).
  */
 import puppeteer from 'puppeteer';
 
