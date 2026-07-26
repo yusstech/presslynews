@@ -18,6 +18,17 @@ export const metadata: Metadata = {
     template: '%s · Pressly',
   },
   description: 'Understand the world. A calm, multilingual global news platform.',
+  /**
+   * Google Search Console ownership.
+   *
+   * Google offers a DNS TXT record, an uploaded HTML file, or this meta tag.
+   * DNS is unavailable while the site is on an `onrender.com` subdomain, so the
+   * tag it is. The token is public by design — it appears in the HTML of every
+   * page — and it stays valid when a custom domain is added later, so it is
+   * checked in rather than carried as an environment variable nobody remembers
+   * to set.
+   */
+  verification: { google: 'jdRkayndU9leUWdrLaeaSVAr6ByaDvLTjpvSjbadyKk' },
 };
 
 export function generateStaticParams() {
