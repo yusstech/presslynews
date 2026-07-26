@@ -1,6 +1,5 @@
 import { promises as fs } from 'node:fs';
 import { join } from 'node:path';
-import { v2 as cloudinary } from 'cloudinary';
 import type { MediaVariants } from '@pressly/types';
 
 /**
@@ -75,16 +74,45 @@ function cloudinaryConfigured(): boolean {
   );
 }
 
-export class MediaStorage {
-  readonly mode: 'cloudinary' | 'local';
-  private readonly localDir: string;
+/**
+ * Checks the variable's shape before the SDK ever sees it.
+ *
+ * The Cloudinary SDK parses `CLOUDINARY_URL` when the module is *imported* and
+ * throws on anything malformed. Importing it at the top of this file therefore
+ * made a typo in one environment variable fail `next build` outright, during
+ * "Collecting page data", with a stack trace pointing at a bundled route file
+ * and no mention of which variable was wrong.
+ *
+ * The overwhelmingly common malformation is pasting the whole line from the
+ * Cloudinary dashboard — `CLOUDINARY_URL=cloudinary://…` — into a value field,
+ * so that is called out by name.
+ */
+function assertCloudinaryUrl(): void {
+  const url = process.env.CLOUDINARY_URL;
+  if (!url || url.startsWith('cloudinary://')) return;
 
-  constructor(options: MediaStorageOptions) {
-    this.localDir = options.localDir;
-    this.mode = cloudinaryConfigured() ? 'cloudinary' : 'local';
+  const hint = url.includes('CLOUDINARY_URL=')
+    ? ' It looks like the whole `CLOUDINARY_URL=…` line was pasted as the value — keep only the part after the first `=`.'
+    : '';
+  throw new Error(
+    `CLOUDINARY_URL must begin with "cloudinary://" (got "${url.slice(0, 24)}…").${hint}`,
+  );
+}
 
-    if (this.mode === 'cloudinary') {
-      cloudinary.config({
+type CloudinarySdk = (typeof import('cloudinary'))['v2'];
+let sdk: Promise<CloudinarySdk> | null = null;
+
+/**
+ * Loads and configures the SDK on first use rather than at import.
+ *
+ * Deferring it keeps a bad credential a *runtime* error on the one route that
+ * uploads, instead of a build failure across the whole app.
+ */
+function getCloudinary(): Promise<CloudinarySdk> {
+  if (!sdk) {
+    assertCloudinaryUrl();
+    sdk = import('cloudinary').then(({ v2 }) => {
+      v2.config({
         // Without this the SDK appends an `?_a=…` analytics parameter to every
         // URL it builds — eight of them in each srcSet, telling Cloudinary
         // which SDK we use and nothing useful to us.
@@ -99,7 +127,19 @@ export class MediaStorage {
               api_secret: process.env.CLOUDINARY_API_SECRET,
             }),
       });
-    }
+      return v2;
+    });
+  }
+  return sdk;
+}
+
+export class MediaStorage {
+  readonly mode: 'cloudinary' | 'local';
+  private readonly localDir: string;
+
+  constructor(options: MediaStorageOptions) {
+    this.localDir = options.localDir;
+    this.mode = cloudinaryConfigured() ? 'cloudinary' : 'local';
   }
 
   /**
@@ -118,6 +158,7 @@ export class MediaStorage {
   }
 
   private async toCloudinary(source: Buffer, id: string, mime: string): Promise<UploadedImage> {
+    const cloudinary = await getCloudinary();
     const publicId = `pressly/media/${id}`;
 
     const result = await new Promise<Record<string, unknown>>((resolve, reject) => {
