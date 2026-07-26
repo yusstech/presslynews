@@ -8,7 +8,10 @@
 # want glibc; on musl they either fall back to a slow build-from-source or fail
 # outright.
 FROM node:20-slim AS base
-ENV PNPM_HOME=/pnpm PATH=$PNPM_HOME:$PATH
+# Two statements on purpose: within a single ENV, PNPM_HOME is not yet defined
+# when PATH is expanded, so PATH would silently lose it.
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
 # openssl is required by Prisma's engine at runtime and is not in -slim.
 RUN apt-get update \
   && apt-get install -y --no-install-recommends openssl ca-certificates \

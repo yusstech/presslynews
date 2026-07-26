@@ -4,7 +4,9 @@
 # node_modules is copied whole.
 
 FROM node:20-slim AS base
-ENV PNPM_HOME=/pnpm PATH=$PNPM_HOME:$PATH
+# See apps/api/Dockerfile — PNPM_HOME must be set before PATH expands it.
+ENV PNPM_HOME=/pnpm
+ENV PATH=$PNPM_HOME:$PATH
 RUN apt-get update \
   && apt-get install -y --no-install-recommends openssl ca-certificates \
   && rm -rf /var/lib/apt/lists/*
