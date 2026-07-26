@@ -40,3 +40,6 @@ ArticleFiles/
 
 # local media uploads
 apps/api/uploads/
+
+# Local media lives in apps/web/public/media (git-ignored) so Next serves it.
+apps/web/public/media/

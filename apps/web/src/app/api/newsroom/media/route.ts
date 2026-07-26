@@ -62,7 +62,10 @@ export async function POST(request: Request) {
   }
 
   const storage = new MediaStorage({
-    localDir: process.env.MEDIA_LOCAL_DIR ?? join(process.cwd(), 'uploads'),
+    // `public/` so Next serves the files itself. Local disk is a development
+    // convenience only — production sets the R2 credentials, because a
+    // serverless filesystem does not persist between requests.
+    localDir: process.env.MEDIA_LOCAL_DIR ?? join(process.cwd(), 'public'),
   });
 
   const id = crypto.randomUUID();

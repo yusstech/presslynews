@@ -77,7 +77,15 @@ export class MediaStorage {
 
   url(key: string): string {
     if (this.mode === 'r2') return `${this.r2PublicUrl}/${key}`;
-    const base = process.env.API_PUBLIC_URL ?? `http://localhost:${process.env.API_PORT ?? 4000}`;
-    return `${base}/uploads/${key}`;
+    /**
+     * A site-relative path, served by Next from `public/`.
+     *
+     * This used to be an absolute URL at the API's host and `/uploads` prefix.
+     * When the API was deleted every stored image URL pointed at a port with
+     * nothing behind it — the Reader rendered broken images and nothing failed
+     * loudly, because a 404 image is still a valid page. Relative paths cannot
+     * rot that way: whoever serves the site serves the media.
+     */
+    return `/${key}`;
   }
 }

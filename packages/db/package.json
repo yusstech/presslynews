@@ -23,7 +23,9 @@
     "create-admin": "dotenv -e ../../.env -- tsx prisma/create-admin.ts",
     "create-admin:prod": "tsx prisma/create-admin.ts",
     "studio": "dotenv -e ../../.env -- prisma studio",
-    "clean": "rm -rf dist .turbo *.tsbuildinfo"
+    "clean": "rm -rf dist .turbo *.tsbuildinfo",
+    "publish-story": "dotenv -e ../../.env -- tsx prisma/publish.ts",
+    "publish-story:prod": "tsx prisma/publish.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

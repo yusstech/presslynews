@@ -68,8 +68,9 @@ async function download(url: string): Promise<Buffer> {
  */
 export async function seedHeroImages(prisma: PrismaClient, uploaderId: string) {
   // Same directory the API serves at /uploads.
+  // apps/web/public — Next serves it, so the URLs are site-relative.
   const localDir =
-    process.env.MEDIA_LOCAL_DIR ?? join(process.cwd(), '..', '..', 'apps', 'api', 'uploads');
+    process.env.MEDIA_LOCAL_DIR ?? join(process.cwd(), '..', '..', 'apps', 'web', 'public');
   const storage = new MediaStorage({ localDir });
 
   await fs.mkdir(localDir, { recursive: true });

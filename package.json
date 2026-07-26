@@ -23,7 +23,8 @@
     "db:create-admin": "pnpm --filter @pressly/db create-admin",
     "db:studio": "pnpm --filter @pressly/db studio",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
-    "db:migrate:prod": "pnpm --filter @pressly/db migrate:prod"
+    "db:migrate:prod": "pnpm --filter @pressly/db migrate:prod",
+    "db:publish": "pnpm --filter @pressly/db publish-story"
   },
   "devDependencies": {
     "prettier": "^3.3.3",
