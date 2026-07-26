@@ -1,5 +1,8 @@
 import puppeteer from 'puppeteer';
 
+// Defaults to the dev server; set BASE_URL to audit a deployed host.
+const BASE = process.env.BASE_URL ?? 'http://localhost:3000';
+
 const browser = await puppeteer.launch({ headless: 'new' });
 const page = await browser.newPage();
 await page.setViewport({ width: 1280, height: 900 });
@@ -14,7 +17,7 @@ const active = () =>
     return { tag: el?.tagName, text: (el?.textContent || '').trim().slice(0, 40), id: el?.id };
   });
 
-await page.goto('http://localhost:3000/en', { waitUntil: 'networkidle0' });
+await page.goto(`${BASE}/en`, { waitUntil: 'networkidle0' });
 
 // 1. Skip link is the first thing a keyboard user reaches.
 await page.keyboard.press('Tab');
@@ -101,7 +104,7 @@ check(
 );
 
 // 7. Language switcher closes on Escape.
-await page.goto('http://localhost:3000/en', { waitUntil: 'networkidle0' });
+await page.goto(`${BASE}/en`, { waitUntil: 'networkidle0' });
 await page.evaluate(() => {
   const btns = [...document.querySelectorAll('header button')];
   btns[btns.length - 1]?.click();

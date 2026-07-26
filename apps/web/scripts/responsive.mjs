@@ -68,10 +68,29 @@ async function sweep(path, label, opts = {}) {
         }
 
         // 2. Interactive things must be big enough to hit.
+        //
+        // WCAG 2.5.8 exempts inline targets: "the target is in a sentence or
+        // its size is otherwise constrained by the line-height of non-target
+        // text." A citation inside body copy is exactly that — its height is
+        // the text's height, and forcing it to 24px would either overlap the
+        // lines around it or break the sentence out of its flow. axe agrees;
+        // it reports no violation for these, so without this exception the two
+        // gates contradict each other.
+        const inSentence = (el) => {
+          if (el.tagName !== 'A') return false;
+          if (getComputedStyle(el).display !== 'inline') return false;
+          const block = el.closest('p, li, figcaption, blockquote, td, th, dd');
+          if (!block) return false;
+          // Alone in its block it is a link presented as a control, not a
+          // citation, and the size rule should still apply.
+          return (block.textContent || '').trim().length > (el.textContent || '').trim().length;
+        };
+
         for (const el of document.querySelectorAll('a, button, input, select, [role="button"]')) {
           const r = el.getBoundingClientRect();
           if (r.width === 0 || r.height === 0) continue; // hidden
           if (getComputedStyle(el).position === 'fixed') continue;
+          if (inSentence(el)) continue;
           if (r.height < minTarget || r.width < minTarget) {
             out.smallTargets.push(
               `<${el.tagName.toLowerCase()}> ${Math.round(r.width)}×${Math.round(r.height)} "${(el.textContent || '').trim().slice(0, 24)}"`,
