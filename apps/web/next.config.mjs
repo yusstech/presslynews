@@ -1,15 +1,14 @@
 import createNextIntlPlugin from 'next-intl/plugin';
 import { config as loadEnv } from 'dotenv';
 
-// Config lives in one file at the repo root, shared with the API and worker.
-// Next only reads .env files inside its own app directory, so load it here.
+// Config lives in one file at the repo root; Next only reads .env files inside
+// its own app directory, so load it here.
 //
-// Development only. On Vercel (and in any container) there is no repo-root
-// .env — configuration comes from the platform, and reading a stray file there
-// would be a way to get surprised by stale values.
-if (process.env.NODE_ENV !== 'production') {
-  loadEnv({ path: '../../.env' });
-}
+// Unconditional on purpose. `dotenv` never overwrites a variable that is
+// already set, so on Vercel the platform's values win and this is a no-op with
+// no file to read. Guarding it on NODE_ENV instead breaks `next build` locally,
+// which runs as production and now needs DATABASE_URL to prerender.
+loadEnv({ path: '../../.env' });
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 

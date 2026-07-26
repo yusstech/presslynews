@@ -2,10 +2,10 @@
 
 import { useRef, useState } from 'react';
 import { Button } from '@pressly/ui';
-import { getToken } from '@/lib/api';
+import { upload } from '@/lib/api';
 import type { NewsroomMedia } from './types';
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
+// Media upload lives in this app now — no cross-origin base URL.
 
 interface Props {
   current: NewsroomMedia | null;
@@ -29,15 +29,9 @@ export function HeroImageField({ current, onUploaded }: Props) {
     try {
       const form = new FormData();
       form.append('file', file);
-      // NB: don't set Content-Type — the browser adds the multipart boundary.
-      const res = await fetch(`${API}/api/newsroom/media`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${getToken()}` },
-        body: form,
-      });
-      if (!res.ok) throw new Error(`Upload failed (${res.status})`);
-      const media = (await res.json()) as NewsroomMedia;
-      onUploaded(media);
+      // `upload` deliberately does not set Content-Type — the browser has to
+      // add the multipart boundary itself. The session rides on the cookie.
+      onUploaded(await upload<NewsroomMedia>('/newsroom/media', form));
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Upload failed');
     } finally {

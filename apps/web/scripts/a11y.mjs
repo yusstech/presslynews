@@ -1,5 +1,6 @@
 import puppeteer from 'puppeteer';
 import { AxePuppeteer } from '@axe-core/puppeteer';
+import { findArticleSlug } from './find-article.mjs';
 
 const PAGES = [
   ['reader home (en)', 'http://localhost:3000/en'],
@@ -17,11 +18,9 @@ const PAGES = [
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'];
 
-// Find a real published article slug to audit.
-const articles = await fetch('http://localhost:4000/api/content/articles?limit=1').then((r) =>
-  r.json(),
-);
-const slug = articles[0]?.slug;
+// Find a real published article slug to audit, by reading the home page — the
+// API this used to ask no longer exists.
+const slug = await findArticleSlug();
 PAGES[2][1] = slug ? `http://localhost:3000/en/article/${slug}` : null;
 
 const browser = await puppeteer.launch({ headless: 'new' });

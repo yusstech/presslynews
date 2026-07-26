@@ -31,10 +31,10 @@ export const topics: Record<string, TopicSummary> = {
 };
 
 export const authors: Record<string, AuthorSummary> = {
-  layla: { id: 'a-layla', name: 'Layla Haddad', slug: 'layla-haddad', role: 'JOURNALIST' },
-  daniel: { id: 'a-daniel', name: 'Daniel Okafor', slug: 'daniel-okafor', role: 'JOURNALIST' },
-  sophie: { id: 'a-sophie', name: 'Sophie Bernard', slug: 'sophie-bernard', role: 'EDITOR' },
-  markus: { id: 'a-markus', name: 'Markus Weber', slug: 'markus-weber', role: 'JOURNALIST' },
+  layla: { id: 'a-layla', name: 'Layla Haddad', slug: 'layla-haddad' },
+  daniel: { id: 'a-daniel', name: 'Daniel Okafor', slug: 'daniel-okafor' },
+  sophie: { id: 'a-sophie', name: 'Sophie Bernard', slug: 'sophie-bernard' },
+  markus: { id: 'a-markus', name: 'Markus Weber', slug: 'markus-weber' },
 };
 
 function img(seed: string): Media {

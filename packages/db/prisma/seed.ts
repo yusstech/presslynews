@@ -41,18 +41,20 @@ async function main() {
   // Reference data — shared with production via `pnpm db:seed:taxonomy`.
   const { countries, topics } = await seedTaxonomy(prisma);
 
-  // ── Users (one per v1 role) ─────────────────────────────────────────────────
+  // ── Users ───────────────────────────────────────────────────────────────────
+  // Kept as bylines rather than roles: there is one account that signs in, and
+  // these give the seeded stories plausible authors to render.
   const userData = [
-    { email: 'admin@pressly.dev', name: 'Amina Farouk', slug: 'amina-farouk', role: 'SUPER_ADMIN' as const },
-    { email: 'editor@pressly.dev', name: 'Sophie Bernard', slug: 'sophie-bernard', role: 'EDITOR' as const, locale: 'fr' },
-    { email: 'journalist@pressly.dev', name: 'Daniel Okafor', slug: 'daniel-okafor', role: 'JOURNALIST' as const },
-    { email: 'copy@pressly.dev', name: 'Layla Haddad', slug: 'layla-haddad', role: 'COPY_EDITOR' as const, locale: 'ar' },
+    { email: 'admin@pressly.dev', name: 'Amina Farouk', slug: 'amina-farouk' },
+    { email: 'editor@pressly.dev', name: 'Sophie Bernard', slug: 'sophie-bernard', locale: 'fr' },
+    { email: 'journalist@pressly.dev', name: 'Daniel Okafor', slug: 'daniel-okafor' },
+    { email: 'copy@pressly.dev', name: 'Layla Haddad', slug: 'layla-haddad', locale: 'ar' },
   ];
   for (const u of userData) {
     await prisma.user.upsert({
       where: { email: u.email },
       create: { ...u, hashedPassword: hashed },
-      update: { name: u.name, role: u.role },
+      update: { name: u.name },
     });
   }
   const users = Object.fromEntries((await prisma.user.findMany()).map((u) => [u.email, u]));

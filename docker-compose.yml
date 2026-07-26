@@ -1,5 +1,9 @@
 # Local development infrastructure for Pressly.
-# Production runs the equivalent as managed Railway services.
+#
+# One service. Redis and Meilisearch used to live here too — Redis for the
+# BullMQ worker, Meilisearch for the ⌘K palette. The worker is gone (publishing
+# happens inline) and search is a Postgres tsvector, so neither is needed.
+# Production is Neon Postgres; this is the local equivalent.
 services:
   postgres:
     image: postgres:16-alpine
@@ -9,7 +13,7 @@ services:
       POSTGRES_PASSWORD: pressly
       POSTGRES_DB: pressly
     ports:
-      # Host 5433 avoids clashing with a local Homebrew Postgres on 5432.
+      # Host 5435 avoids clashing with a local Homebrew Postgres on 5432.
       - "5435:5432"
     volumes:
       - pressly_pg:/var/lib/postgresql/data
@@ -19,29 +23,5 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
-    image: redis:7-alpine
-    restart: unless-stopped
-    ports:
-      # Host 6381 avoids a local Homebrew Redis on 6379 (and another project's
-      # on 6380). Sharing that instance meant Pressly's BullMQ queues sat in the
-      # same keyspace as an unrelated project's.
-      - "6381:6379"
-    volumes:
-      - pressly_redis:/data
-
-  meilisearch:
-    image: getmeili/meilisearch:v1.10
-    restart: unless-stopped
-    environment:
-      MEILI_MASTER_KEY: masterKey-change-me
-      MEILI_ENV: development
-    ports:
-      - "7700:7700"
-    volumes:
-      - pressly_meili:/meili_data
-
 volumes:
   pressly_pg:
-  pressly_redis:
-  pressly_meili:

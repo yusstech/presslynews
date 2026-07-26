@@ -10,7 +10,7 @@
  * So: screenshot the element at rest, screenshot it hovered, and compare the
  * actual pixels. A change a human cannot see fails.
  *
- * Needs a live server on :3000 (pnpm dev / pnpm start) with the API up.
+ * Needs a live server on :3000 (Postgres is the only backing service).
  */
 import puppeteer from 'puppeteer';
 import { PNG } from 'pngjs';
@@ -44,7 +44,9 @@ function diffRatio(aBuf, bBuf) {
   return changed / (a.width * a.height);
 }
 
-const browser = await puppeteer.launch({ headless: 'new' });
+// Clipped screenshots of a tall page can exceed the default protocol timeout on
+// a loaded machine; this check takes a dozen of them back to back.
+const browser = await puppeteer.launch({ headless: 'new', protocolTimeout: 120_000 });
 
 /**
  * Hover `selector` and report how much of its bounding box changed. `pad`

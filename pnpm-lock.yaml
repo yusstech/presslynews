@@ -117,9 +117,15 @@ importers:
       '@pressly/config':
         specifier: workspace:*
         version: link:../../packages/config
+      '@pressly/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@pressly/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
+      '@pressly/storage':
+        specifier: workspace:*
+        version: link:../../packages/storage
       '@pressly/types':
         specifier: workspace:*
         version: link:../../packages/types
@@ -135,12 +141,18 @@ importers:
       '@tiptap/starter-kit':
         specifier: ^2.9.1
         version: 2.27.2
+      bcryptjs:
+        specifier: ^2.4.3
+        version: 2.4.3
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
       dotenv:
         specifier: ^16.4.5
         version: 16.4.5
+      jose:
+        specifier: ^5.9.6
+        version: 5.10.0
       next:
         specifier: ^15.0.3
         version: 15.5.21(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -153,10 +165,19 @@ importers:
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
+      server-only:
+        specifier: ^0.0.1
+        version: 0.0.1
+      sharp:
+        specifier: ^0.33.5
+        version: 0.33.5
     devDependencies:
       '@axe-core/puppeteer':
         specifier: ^4.10.1
         version: 4.12.1(puppeteer@24.43.1(typescript@5.9.3))
+      '@types/bcryptjs':
+        specifier: ^2.4.6
+        version: 2.4.6
       '@types/node':
         specifier: ^22.9.0
         version: 22.20.1
@@ -2402,6 +2423,9 @@ packages:
     resolution: {integrity: sha512-/imKNG4EbWNrVjoNC/1H5/9GFy+tqjGBHCaSsN+P2RnPqjsLmv6UD3Ej+Kj8nBWaRAwyk7kK5ZUc+OEatnTR3A==}
     hasBin: true
 
+  jose@5.10.0:
+    resolution: {integrity: sha512-s+3Al/p9g32Iq+oqXxkW//7jk2Vig6FF1CFqzVXoTUXt2qz89YWbL+OwS17NFYEvxC35n0FKeGO2LGYSxeM2Gg==}
+
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
@@ -3135,6 +3159,9 @@ packages:
   serve-static@1.16.3:
     resolution: {integrity: sha512-x0RTqQel6g5SY7Lg6ZreMmsOzncHFU7nhnRWkKgWuMTu5NN0DR5oruckMqRvacAN9d5w6ARnRBXl9xhDCgfMeA==}
     engines: {node: '>= 0.8.0'}
+
+  server-only@0.0.1:
+    resolution: {integrity: sha512-qepMx2JxAa5jjfzxG79yPPq+8BuFToHd1hm7kI+Z4zAq1ftQiP7HcxMhDDItrbtwVeLg/cY2JnKnrcFkmiswNA==}
 
   set-function-length@1.2.2:
     resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}
@@ -5776,6 +5803,8 @@ snapshots:
 
   jiti@1.21.7: {}
 
+  jose@5.10.0: {}
+
   js-tokens@4.0.0: {}
 
   js-yaml@4.3.0:
@@ -6578,6 +6607,8 @@ snapshots:
       send: 0.19.2
     transitivePeerDependencies:
       - supports-color
+
+  server-only@0.0.1: {}
 
   set-function-length@1.2.2:
     dependencies:

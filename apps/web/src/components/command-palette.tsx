@@ -16,7 +16,7 @@ interface Hit {
   language: string;
 }
 
-const API = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:4000';
+// Search lives in this app now; no cross-origin base URL to configure.
 
 interface Props {
   open: boolean;
@@ -97,7 +97,7 @@ export function CommandPalette({ open, onClose }: Props) {
     const controller = new AbortController();
     const id = setTimeout(async () => {
       try {
-        const res = await fetch(`${API}/api/search?q=${encodeURIComponent(query)}`, {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`, {
           signal: controller.signal,
         });
         const data = (await res.json()) as Hit[];

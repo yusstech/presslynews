@@ -105,7 +105,7 @@ function Editor() {
   }
 
   const dir = article.primaryLanguage === 'ar' ? 'rtl' : 'ltr';
-  const transitions = availableTransitions(article.status, user.role);
+  const transitions = availableTransitions(article.status);
 
   return (
     <>

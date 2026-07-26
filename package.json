@@ -18,12 +18,12 @@
     "infra:down": "docker compose down",
     "db:generate": "pnpm --filter @pressly/db generate",
     "db:migrate": "pnpm --filter @pressly/db migrate",
-    "db:deploy": "pnpm --filter @pressly/db migrate:deploy",
     "db:seed": "pnpm --filter @pressly/db seed",
     "db:seed:taxonomy": "pnpm --filter @pressly/db seed:taxonomy",
     "db:create-admin": "pnpm --filter @pressly/db create-admin",
     "db:studio": "pnpm --filter @pressly/db studio",
-    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\""
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "db:migrate:prod": "pnpm --filter @pressly/db migrate:prod"
   },
   "devDependencies": {
     "prettier": "^3.3.3",
