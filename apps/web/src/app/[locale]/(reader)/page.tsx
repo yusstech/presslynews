@@ -7,8 +7,28 @@ import { Link } from '@/i18n/navigation';
 import { ArticleCard } from '@/components/article-card';
 import { EmptyState } from '@/components/empty-state';
 import { getHome, getTopics } from '@/lib/content-api';
+import { localizedMetadata } from '@/lib/seo';
 import { SIZES } from '@/lib/images';
 import { MediaImage } from '@/components/media-image';
+import type { Metadata } from 'next';
+import type { Locale } from '@pressly/types';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  return {
+    // The layout template appends "· Pressly"; on the home page that would
+    // read "Pressly · Pressly".
+    title: { absolute: 'Pressly — Global news & infrastructure intelligence' },
+    description:
+      'Reporting and primary-source project records from the energy and infrastructure sector across the Middle East, Africa and Europe.',
+    ...localizedMetadata(locale as Locale, '/'),
+  };
+}
 
 export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;

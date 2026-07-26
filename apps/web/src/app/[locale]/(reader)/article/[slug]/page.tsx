@@ -9,6 +9,7 @@ import { Link } from '@/i18n/navigation';
 import { ArticleCard } from '@/components/article-card';
 import { ReadingProgress } from '@/components/reading-progress';
 import { getArticle, getByTopic } from '@/lib/content-api';
+import { articleCanonical, articleJsonLd } from '@/lib/seo';
 import { SIZES } from '@/lib/images';
 import { MediaImage } from '@/components/media-image';
 import { formatDate } from '@/lib/format';
@@ -22,16 +23,31 @@ export async function generateMetadata({
   const article = await getArticle(slug);
   if (!article) return {};
   return {
-    title: article.seoTitle ?? article.headline,
+    // Absolute, so the layout's "· Pressly" suffix is not appended. A headline
+    // carrying two organisations already needs every one of the ~60 characters
+    // a result list shows, and Google appends the site name itself.
+    title: { absolute: article.seoTitle ?? article.headline },
     description: article.metaDescription ?? article.summary,
+    // One canonical for all four locale prefixes — the article body is not
+    // translated, so they are duplicates rather than language variants. See
+    // lib/seo.ts.
+    alternates: { canonical: articleCanonical(article) },
     openGraph: {
       title: article.headline,
       description: article.summary,
-      // Prefer the card the worker renders on publish; fall back to the hero.
+      url: articleCanonical(article),
       images:
         article.socialImageUrl ??
-        (article.heroImage ? [article.heroImage.variants.original] : undefined),
+        (article.heroImage
+          ? [article.heroImage.variants.large ?? article.heroImage.variants.original]
+          : undefined),
       type: 'article',
+      publishedTime: article.publishedAt,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: article.headline,
+      description: article.summary,
     },
   };
 }
@@ -57,6 +73,12 @@ export default async function ArticlePage({
 
   return (
     <>
+      {/* In the server-rendered HTML, so crawlers that never execute JavaScript
+          still get it. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd(article)) }}
+      />
       <ReadingProgress />
       <article className="pb-16">
         <Container className="pt-10">
@@ -96,16 +118,31 @@ export default async function ArticlePage({
 
         {article.heroImage && (
           <Container className="animate-rise stagger mt-8" style={{ '--stagger': 1 } as CSSProperties}>
-            {/* Was serving `original` — the untouched upload — to every reader
-                on every device. It is also the LCP element here. */}
-            <MediaImage
-              variants={article.heroImage.variants}
-              src={article.heroImage.variants.large ?? article.heroImage.variants.original}
-              sizes={SIZES.articleHero}
-              alt={article.heroImage.alt ?? ''}
-              priority
-              className="mx-auto max-h-[560px] w-full max-w-content rounded-xl object-cover"
-            />
+            <figure>
+              {/* Was serving `original` — the untouched upload — to every reader
+                  on every device. It is also the LCP element here. */}
+              <MediaImage
+                variants={article.heroImage.variants}
+                src={article.heroImage.variants.large ?? article.heroImage.variants.original}
+                sizes={SIZES.articleHero}
+                alt={article.heroImage.alt ?? ''}
+                priority
+                className="mx-auto max-h-[560px] w-full max-w-content rounded-xl object-cover"
+              />
+              {/* A picture on a page of verified facts has to say what it is.
+                  Without this the credit and any "illustrative, not the subject"
+                  note sit in the database where no reader can see them. */}
+              {(article.heroImage.caption || article.heroImage.photographer) && (
+                <figcaption className="mx-auto mt-3 flex max-w-content flex-wrap items-baseline gap-x-3 gap-y-1 font-sans text-caption text-ink-muted">
+                  {article.heroImage.caption && <span>{article.heroImage.caption}</span>}
+                  {article.heroImage.photographer && (
+                    <span className="font-mono text-meta uppercase tracking-widest">
+                      {article.heroImage.photographer}
+                    </span>
+                  )}
+                </figcaption>
+              )}
+            </figure>
           </Container>
         )}
 

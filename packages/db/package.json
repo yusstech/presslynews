@@ -32,8 +32,7 @@
   },
   "dependencies": {
     "@prisma/client": "^5.20.0",
-    "@pressly/storage": "workspace:*",
-    "sharp": "^0.33.5"
+    "@pressly/storage": "workspace:*"
   },
   "devDependencies": {
     "bcryptjs": "^2.4.3",

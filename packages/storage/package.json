@@ -16,7 +16,8 @@
     "clean": "rm -rf dist .turbo *.tsbuildinfo"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.670.0"
+    "@pressly/types": "workspace:*",
+    "cloudinary": "^2.10.0"
   },
   "devDependencies": {
     "@types/node": "^22.9.0",

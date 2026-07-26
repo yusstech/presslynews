@@ -4,9 +4,15 @@ import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, setRequestLocale } from 'next-intl/server';
 import { directionForLocale, isLocale, LOCALES } from '@pressly/types';
 import { fontVariables } from '../fonts';
+import { siteJsonLd } from '@/lib/seo';
+import { siteUrl } from '@/lib/site';
 import '../globals.css';
 
 export const metadata: Metadata = {
+  // Makes every relative `alternates.canonical` in a child page resolve to an
+  // absolute URL. Without it Next emits a relative canonical, which some
+  // crawlers resolve against the wrong origin.
+  metadataBase: new URL(siteUrl()),
   title: {
     default: 'Pressly',
     template: '%s · Pressly',
@@ -35,6 +41,12 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} dir={dir} className={fontVariables} suppressHydrationWarning>
       <body className="min-h-screen bg-background antialiased">
+        {/* One publisher entity for the whole site; every article's `publisher`
+            is a reference to this node rather than another copy of the name. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteJsonLd()) }}
+        />
         <NextIntlClientProvider messages={messages}>{children}</NextIntlClientProvider>
       </body>
     </html>

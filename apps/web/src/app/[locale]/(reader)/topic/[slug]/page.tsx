@@ -5,6 +5,24 @@ import { Container } from '@pressly/ui';
 import { ArticleCard } from '@/components/article-card';
 import { EmptyState } from '@/components/empty-state';
 import { getByTopic, getTopic } from '@/lib/content-api';
+import { localizedMetadata } from '@/lib/seo';
+import type { Metadata } from 'next';
+import type { Locale } from '@pressly/types';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; slug: string }>;
+}): Promise<Metadata> {
+  const { locale, slug } = await params;
+  const topic = await getTopic(slug);
+  if (!topic || !isLocale(locale)) return {};
+  return {
+    title: topic.name,
+    description: `${topic.name} coverage from Pressly — reporting and project records.`,
+    ...localizedMetadata(locale as Locale, `/topic/${slug}`),
+  };
+}
 
 export default async function TopicPage({
   params,

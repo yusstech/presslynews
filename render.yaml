@@ -1,0 +1,93 @@
+# Render Blueprint for Pressly.
+#
+# One web service. Postgres is Neon and media is Cloudinary, so neither is
+# declared here — both are reached over the network with credentials set in the
+# dashboard.
+#
+# Apply with: Render dashboard → Blueprints → New Blueprint Instance, pointed at
+# this repository. Every `sync: false` variable must be filled in there; Render
+# will not create the service until they are.
+services:
+  - type: web
+    name: pressly
+    runtime: node
+    plan: starter
+    region: frankfurt
+    branch: main
+
+    # Installed from the repo root so pnpm can link the workspace packages;
+    # `pnpm build` is turbo, which builds packages/* before apps/web.
+    #
+    # The build prerenders pages that read the database, so DATABASE_URL has to
+    # be present here, not only at runtime. A build that fails with a Prisma
+    # connection error is almost always a missing variable at this step.
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm build
+    startCommand: pnpm --filter @pressly/web start
+
+    # Node 20, matching .nvmrc.
+    healthCheckPath: /en
+
+    envVars:
+      - key: NODE_VERSION
+        value: '20'
+      - key: NODE_ENV
+        value: production
+
+      # Neon. DATABASE_URL is the pooled connection (host contains `-pooler`),
+      # DIRECT_DATABASE_URL the direct one — Prisma migrations cannot run
+      # through a pooler.
+      - key: DATABASE_URL
+        sync: false
+      - key: DIRECT_DATABASE_URL
+        sync: false
+
+      # Signs the newsroom session cookie. Render generates one; regenerating it
+      # signs everyone out, which is the intended blast radius.
+      - key: SESSION_SECRET
+        generateValue: true
+
+      # Authorises the scheduled-publish endpoint. The cron job below reads the
+      # same value.
+      - key: CRON_SECRET
+        generateValue: true
+
+      # Cloudinary, in the single-variable form: cloudinary://key:secret@cloud.
+      # Without it the app silently falls back to writing images to a disk that
+      # does not survive a deploy, so treat it as required.
+      - key: CLOUDINARY_URL
+        sync: false
+
+      # Public origin, used for canonical URLs, the RSS feed and the sitemap.
+      # Set it to the custom domain once there is one — not the onrender.com URL.
+      - key: NEXT_PUBLIC_SITE_URL
+        sync: false
+
+  # Scheduled stories are released by this, not by the web service — a Next.js
+  # app has no reliable place to run a timer. Hourly means a story scheduled for
+  # 09:00 appears by 09:59; make it `*/5 * * * *` if that matters.
+  #
+  # Render cron jobs are billed separately. If that is not wanted, delete this
+  # block and hit the same URL from any external scheduler, or simply publish
+  # with a past date and skip scheduling altogether.
+  - type: cron
+    name: pressly-publish-due
+    runtime: node
+    plan: starter
+    region: frankfurt
+    branch: main
+    schedule: '0 * * * *'
+    buildCommand: 'true'
+    startCommand: >-
+      curl -fsS -H "Authorization: Bearer $CRON_SECRET"
+      "$SITE_URL/api/cron/publish-due"
+    envVars:
+      - key: CRON_SECRET
+        fromService:
+          type: web
+          name: pressly
+          envVarKey: CRON_SECRET
+      - key: SITE_URL
+        fromService:
+          type: web
+          name: pressly
+          envVarKey: NEXT_PUBLIC_SITE_URL

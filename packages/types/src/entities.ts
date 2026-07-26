@@ -83,7 +83,7 @@ export interface ArticleCard {
   headline: string;
   subheadline?: string;
   summary?: string;
-  heroImage?: Pick<Media, 'id' | 'alt' | 'variants' | 'focalPoint'>;
+  heroImage?: Pick<Media, 'id' | 'alt' | 'variants' | 'focalPoint' | 'caption' | 'photographer'>;
   readingTime: number;
   primaryLanguage: Locale;
   country?: CountrySummary;

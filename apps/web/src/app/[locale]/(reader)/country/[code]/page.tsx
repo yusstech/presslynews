@@ -5,6 +5,24 @@ import { Container, Kicker } from '@pressly/ui';
 import { ArticleCard } from '@/components/article-card';
 import { EmptyState } from '@/components/empty-state';
 import { getByCountry, getCountry } from '@/lib/content-api';
+import { localizedMetadata } from '@/lib/seo';
+import type { Metadata } from 'next';
+import type { Locale } from '@pressly/types';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string; code: string }>;
+}): Promise<Metadata> {
+  const { locale, code } = await params;
+  const country = await getCountry(code);
+  if (!country || !isLocale(locale)) return {};
+  return {
+    title: country.name,
+    description: `News and infrastructure project records from ${country.name}.`,
+    ...localizedMetadata(locale as Locale, `/country/${code}`),
+  };
+}
 
 export default async function CountryPage({
   params,

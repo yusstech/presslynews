@@ -140,6 +140,59 @@ function BlockRenderer({ node, context }: { node: BlockNode; context?: RenderCon
     case 'horizontalRule':
       return <hr className="my-10 border-border" />;
 
+    case 'table':
+      return (
+        <figure className="my-8">
+          {node.attrs?.caption && (
+            <figcaption className="mb-3 font-mono text-meta uppercase tracking-widest text-ink-muted">
+              {node.attrs.caption}
+            </figcaption>
+          )}
+          {/* The scroll container is the figure's child, not the page — a wide
+              table must never make the article body scroll sideways. */}
+          <div className="overflow-x-auto rounded-md border border-border">
+            <table className="w-full border-collapse font-sans text-ui-sm">
+              <thead>
+                <tr>
+                  {node.header.map((cell, i) => (
+                    <th
+                      key={i}
+                      scope="col"
+                      className="border-b border-border bg-background px-4 py-2.5 text-start font-medium text-ink"
+                    >
+                      {cell}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {node.rows.map((row, r) => (
+                  <tr key={r}>
+                    {row.map((cell, c) => (
+                      <td
+                        key={c}
+                        // Row labels read as headers to a screen reader, which
+                        // is what makes a two-column facts table navigable.
+                        {...(c === 0 ? { scope: 'row' as const } : {})}
+                        className={clsx(
+                          'px-4 py-2.5 align-top',
+                          r < node.rows.length - 1 && 'border-b border-border',
+                          c === 0 ? 'font-medium text-ink' : 'text-ink-muted',
+                          // Quantities line up only if the digits do.
+                          /^[\d.,\s]+$/.test(cell) && 'font-mono tabular-nums',
+                        )}
+                      >
+                        {cell}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </figure>
+      );
+
     default:
       return null;
   }

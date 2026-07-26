@@ -9,20 +9,22 @@ export const dynamic = 'force-dynamic';
 /**
  * Releases scheduled stories.
  *
- * The worker swept for these every 60 seconds. Vercel Cron calls this instead
- * — on the Hobby plan that is once a day, so scheduling is approximate unless
- * the project is on Pro. "Publish now" is unaffected either way.
+ * The worker swept for these every 60 seconds; a scheduler now calls this on an
+ * interval instead. "Publish now" does not depend on it.
  *
- * Vercel signs cron requests with CRON_SECRET; without that check the route
- * would be a public endpoint that publishes drafts.
+ * Fails closed. This previously skipped the check entirely when CRON_SECRET was
+ * unset — which is exactly the state a fresh deployment is in, so the endpoint
+ * that publishes stories would have been open to anyone until someone
+ * remembered to set the variable. A missing secret is a misconfiguration, not
+ * permission.
  */
 export async function GET(request: Request) {
   const secret = process.env.CRON_SECRET;
-  if (secret) {
-    const auth = request.headers.get('authorization');
-    if (auth !== `Bearer ${secret}`) {
-      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-    }
+  if (!secret) {
+    return NextResponse.json({ message: 'CRON_SECRET is not configured' }, { status: 503 });
+  }
+  if (request.headers.get('authorization') !== `Bearer ${secret}`) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
 
   const due = await prisma.article.findMany({

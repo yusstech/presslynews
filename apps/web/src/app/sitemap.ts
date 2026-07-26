@@ -4,12 +4,23 @@ import { getAllPublished, getCountries, getTopics } from '@/lib/content-api';
 import { siteUrl } from '@/lib/site';
 
 /**
- * Sitemap covering every locale of every public page.
+ * Sitemap of canonical URLs.
  *
- * Each URL carries hreflang alternates for its siblings, which is what tells a
- * search engine these are translations of one page rather than duplicates —
- * the thing that matters most for a site whose whole premise is four editions.
+ * Listing pages appear once per locale with hreflang alternates: their chrome
+ * really is translated, so they are language variants of one page.
+ *
+ * **Articles appear once.** Their content is not translated — `/ar/article/x`
+ * serves the same English body as `/en/article/x` — so all four canonicalise to
+ * the article's own language. Listing the other three here would submit URLs
+ * this site's own canonical tags disown, which is a contradiction a crawler
+ * resolves by trusting neither signal.
+ *
+ * Rendered per request rather than at build time. `siteUrl()` is a runtime
+ * value, and a prerendered sitemap freezes whatever origin the build machine
+ * had — `http://localhost:3000`, on a build that ran before SITE_URL was set.
  */
+export const dynamic = 'force-dynamic';
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = siteUrl();
 
@@ -37,10 +48,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   };
 
   add('', articles[0]?.publishedAt, 1);
-  add('/search', undefined, 0.3);
 
+  // One entry per article, at its canonical locale. `/search` is absent
+  // deliberately — it carries `noindex`, and submitting a page you have asked
+  // not to be indexed just wastes crawl budget.
   for (const article of articles) {
-    add(`/article/${article.slug}`, article.publishedAt, 0.8);
+    const lang = (LOCALES as readonly string[]).includes(article.primaryLanguage)
+      ? article.primaryLanguage
+      : 'en';
+    entries.push({
+      url: `${base}/${lang}/article/${article.slug}`,
+      lastModified: article.publishedAt ? new Date(article.publishedAt) : undefined,
+      priority: 0.8,
+    });
   }
   for (const country of countries) {
     add(`/country/${country.code}`, undefined, 0.5);

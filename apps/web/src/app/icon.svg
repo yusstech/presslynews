@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <!-- Warm white ground and Midnight Navy from the Project Atlas tokens; the
+       serif P matches the masthead, which is set in the same family. -->
+  <rect width="32" height="32" rx="6" fill="#16213E"/>
+  <text x="16" y="23" font-family="Georgia, 'Times New Roman', serif" font-size="21"
+        font-weight="600" fill="#FAFAF8" text-anchor="middle">P</text>
+</svg>

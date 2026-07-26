@@ -56,6 +56,8 @@ function toCard(a: ArticleRow): ArticleCard {
       ? {
           id: a.heroImage.id,
           alt: a.heroImage.alt ?? undefined,
+          caption: a.heroImage.caption ?? undefined,
+          photographer: a.heroImage.photographer ?? undefined,
           variants: a.heroImage.variants as unknown as MediaVariants,
           focalPoint:
             a.heroImage.focalPointX != null && a.heroImage.focalPointY != null

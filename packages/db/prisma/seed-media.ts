@@ -1,7 +1,6 @@
 import { promises as fs } from 'node:fs';
 import { join } from 'node:path';
 import { PrismaClient } from '@prisma/client';
-import sharp from 'sharp';
 import { MediaStorage } from '@pressly/storage';
 
 /**
@@ -11,24 +10,14 @@ import { MediaStorage } from '@pressly/storage';
  * flat grey placeholders — which made the Reader impossible to judge and hid
  * the fact that the card hover treatment only existed on cards with an image.
  *
- * This deliberately mirrors `apps/api/src/media/media.service.ts`: the same
- * widths, the same JPEG quality, the same `media/<id>/<name>.jpg` layout and
- * the same MediaStorage, so seeded media is indistinguishable from an editor
- * upload and exercises the same local-disk fallback.
+ * Goes through the same `MediaStorage.upload` an editor upload does, so seeded
+ * media is indistinguishable from the real thing and exercises the same path.
  *
  * LICENSING: these are Unsplash-licensed photographs served via Lorem Picsum,
  * credited to their photographers below. They are DEV SEED DATA — fine for
  * development and review, not a substitute for the client licensing its own
  * imagery for production.
  */
-
-/** Same widths as the API pipeline. Keep in step if that changes. */
-const SIZES = [
-  { name: 'large', width: 1600 },
-  { name: 'tablet', width: 1024 },
-  { name: 'mobile', width: 640 },
-  { name: 'thumb', width: 320 },
-] as const;
 
 const SOURCE = 'Unsplash (via Lorem Picsum)';
 const LICENCE = 'Unsplash License — free to use. Dev seed data only.';
@@ -98,50 +87,24 @@ export async function seedHeroImages(prisma: PrismaClient, uploaderId: string) {
     }
 
     const id = crypto.randomUUID();
-    const base = `media/${id}`;
-    const metadata = await sharp(source).metadata();
-    const variants: Record<string, unknown> = {};
-
-    variants.original = await storage.put(`${base}/original.jpg`, source, 'image/jpeg');
-
-    for (const size of SIZES) {
-      const width = Math.min(size.width, metadata.width ?? size.width);
-      const buf = await sharp(source)
-        .resize({ width, withoutEnlargement: true })
-        .jpeg({ quality: 82 })
-        .toBuffer();
-      variants[size.name] = await storage.put(`${base}/${size.name}.jpg`, buf, 'image/jpeg');
-    }
-
-    // WebP at every width — mirrors the API pipeline.
-    const webpSet: Record<string, string> = {};
-    for (const size of SIZES) {
-      const width = Math.min(size.width, metadata.width ?? size.width);
-      const buf = await sharp(source)
-        .resize({ width, withoutEnlargement: true })
-        .webp({ quality: 76 })
-        .toBuffer();
-      webpSet[size.name] = await storage.put(`${base}/${size.name}.webp`, buf, 'image/webp');
-    }
-    variants.webpSet = webpSet;
-    variants.webp = webpSet.large!;
+    const stored = await storage.upload(source, id);
 
     const media = await prisma.media.create({
       data: {
         id,
-        storageKey: base,
+        storageKey: stored.storageKey,
         filename: `${article.slug}.jpg`,
-        mimeType: 'image/jpeg',
-        size: source.byteLength,
-        width: metadata.width ?? null,
-        height: metadata.height ?? null,
+        mimeType: stored.mimeType,
+        size: stored.bytes,
+        width: stored.width,
+        height: stored.height,
         alt: spec.alt,
         photographer: spec.credit,
         copyrightHolder: SOURCE,
         usageRights: LICENCE,
         uploadedById: uploaderId,
         processingStatus: 'READY',
-        variants,
+        variants: stored.variants,
       },
     });
 

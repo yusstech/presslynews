@@ -88,6 +88,33 @@ export interface HorizontalRuleNode {
   type: 'horizontalRule';
 }
 
+/**
+ * A data table.
+ *
+ * Added for project records, where the specification is the story: tower
+ * counts by type, contract dates, quantities. Written as prose those facts are
+ * unreadable and — more to the point — unextractable, because neither a reader
+ * skimming nor a retrieval model can line up a label with its value in a
+ * sentence. A real `<table>` with a header row is the structure both are
+ * looking for.
+ *
+ * Deliberately simple: header row plus body rows of plain strings. No
+ * colspan, no nested blocks, no inline marks inside cells. Every table this
+ * has to carry is a two-column fact list or a small quantity breakdown, and a
+ * richer model would be a table editor nobody asked for.
+ */
+export interface TableNode {
+  type: 'table';
+  attrs?: {
+    /** Rendered above the table as a caption, and used as its accessible name. */
+    caption?: string;
+  };
+  /** Header cells. */
+  header: string[];
+  /** Body rows. Each row should have the same length as `header`. */
+  rows: string[][];
+}
+
 export interface HardBreakNode {
   type: 'hardBreak';
 }
@@ -103,7 +130,8 @@ export type BlockNode =
   | BulletListNode
   | OrderedListNode
   | EmbedNode
-  | HorizontalRuleNode;
+  | HorizontalRuleNode
+  | TableNode;
 
 export interface ArticleDoc {
   type: 'doc';
@@ -120,6 +148,12 @@ export function extractPlainText(doc: ArticleDoc): string {
     nodes
       .map((node) => {
         if (node.type === 'text') return node.text;
+        // Tables keep their text in `header`/`rows`, not `content` — without
+        // this branch a facts table counts as zero words and is invisible to
+        // reading time and to anything else built on plain text.
+        if (node.type === 'table') {
+          return [node.attrs?.caption ?? '', ...node.header, ...node.rows.flat()].join(' ');
+        }
         if ('content' in node && Array.isArray(node.content)) {
           return walk(node.content as Array<BlockNode | InlineNode | ListItemNode>);
         }

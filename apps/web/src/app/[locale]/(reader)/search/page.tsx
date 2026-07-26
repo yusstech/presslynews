@@ -1,4 +1,14 @@
+import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
+
+/**
+ * Internal search results are the textbook case for keeping out of an index:
+ * unbounded URLs, thin pages, and content that already exists elsewhere on the
+ * site. Google's own guidance is explicit about it.
+ */
+export const metadata: Metadata = {
+  robots: { index: false, follow: true },
+};
 import type { CSSProperties } from 'react';
 import { notFound } from 'next/navigation';
 import { isLocale } from '@pressly/types';
