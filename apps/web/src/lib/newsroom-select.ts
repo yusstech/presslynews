@@ -21,6 +21,9 @@ export const articleSummarySelect = {
   isBreaking: true,
   updatedAt: true,
   publishedAt: true,
+  // In the list so a scheduled story can show the date it will go out on,
+  // rather than the date it was last touched.
+  publishAt: true,
   author: { select: { id: true, name: true } },
   country: { select: { id: true, name: true, code: true } },
   topic: { select: { id: true, name: true, slug: true } },

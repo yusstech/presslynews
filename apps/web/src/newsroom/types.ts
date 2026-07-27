@@ -12,6 +12,7 @@ export interface NewsroomArticleSummary {
   isBreaking: boolean;
   updatedAt: string;
   publishedAt: string | null;
+  publishAt: string | null;
   author?: { id: string; name: string } | null;
   country?: { id: string; name: string; code: string } | null;
   topic?: { id: string; name: string; slug: string } | null;
@@ -42,6 +43,5 @@ export interface NewsroomArticle extends NewsroomArticleSummary {
   topicId: string | null;
   heroImageId: string | null;
   heroImage: NewsroomMedia | null;
-  publishAt: string | null;
   statusEvents?: NewsroomStatusEvent[];
 }

@@ -79,7 +79,7 @@ function Dashboard() {
                   Author
                 </th>
                 <th className="hidden px-5 py-3 text-start font-mono text-meta uppercase tracking-widest text-ink-muted md:table-cell">
-                  Updated
+                  Date
                 </th>
               </tr>
             </thead>
@@ -106,8 +106,8 @@ function Dashboard() {
                   <td className="hidden px-5 py-4 font-sans text-sm text-ink-muted sm:table-cell">
                     {a.author?.name ?? '—'}
                   </td>
-                  <td className="hidden px-5 py-4 font-mono text-xs text-ink-muted md:table-cell">
-                    {new Date(a.updatedAt).toLocaleDateString()}
+                  <td className="hidden px-5 py-4 md:table-cell">
+                    <ArticleDate article={a} />
                   </td>
                 </tr>
               ))}
@@ -116,5 +116,41 @@ function Dashboard() {
         </div>
       )}
     </Container>
+  );
+}
+
+/**
+ * The date that answers the question an editor is actually asking.
+ *
+ * This column showed `updatedAt` unconditionally under a header reading
+ * "Updated" — but the header is hidden below `md`, so on a narrower screen it
+ * was a bare column of dates. Every published story here carries a real
+ * historic date, and a list showing today against all five reads as though
+ * something has rewritten them.
+ *
+ * A published story shows when it was published; a scheduled one shows when it
+ * will go out; anything still being written shows when it was last touched.
+ * The label is per row rather than in the header because the meaning now
+ * differs per row.
+ */
+function ArticleDate({ article }: { article: NewsroomArticleSummary }) {
+  // A published story's date is its publication date, a scheduled one's is when
+  // it goes out. Both are already explained by the Status column beside them,
+  // so they need no caption — repeating "Published" under a PUBLISHED badge is
+  // noise. Everything else falls back to the modification date, which is the
+  // one case the status does *not* imply, so that is the case that says so.
+  const published = article.status === 'PUBLISHED' && article.publishedAt;
+  const scheduled = article.status === 'SCHEDULED' && article.publishAt;
+  const value = published || scheduled || article.updatedAt;
+
+  return (
+    <>
+      <span className="block font-mono text-xs text-ink">
+        {new Date(value).toLocaleDateString()}
+      </span>
+      {!published && !scheduled && (
+        <span className="mt-0.5 block font-mono text-meta text-ink-muted">last edited</span>
+      )}
+    </>
   );
 }
