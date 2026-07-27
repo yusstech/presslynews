@@ -31,7 +31,7 @@ export function MediaImage({ variants, src, alt, sizes, className, priority = fa
   return (
     <picture>
       {webp && <source type="image/webp" srcSet={webp} sizes={sizes} />}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
+      { }
       <img
         src={src}
         srcSet={jpeg}

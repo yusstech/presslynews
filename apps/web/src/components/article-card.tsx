@@ -100,7 +100,7 @@ export function ArticleCard({
         )}
       >
         {src ? (
-          // eslint-disable-next-line @next/next/no-img-element
+           
           <MediaImage
             variants={article.heroImage?.variants}
             src={src}

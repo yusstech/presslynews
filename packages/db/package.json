@@ -25,7 +25,8 @@
     "studio": "dotenv -e ../../.env -- prisma studio",
     "clean": "rm -rf dist .turbo *.tsbuildinfo",
     "publish-story": "dotenv -e ../../.env -- tsx prisma/publish.ts",
-    "publish-story:prod": "tsx prisma/publish.ts"
+    "publish-story:prod": "tsx prisma/publish.ts",
+    "clear-demo": "dotenv -e ../../.env -- tsx prisma/clear-demo.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

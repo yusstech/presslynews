@@ -1,16 +1,17 @@
 import { NextResponse } from 'next/server';
 import { revalidateTag } from 'next/cache';
-import type { Prisma } from '@pressly/db';
 import { prisma } from '@/lib/prisma';
 import { requireUser } from '@/lib/session';
-import {
-  EDITABLE_FIELDS,
-  articleDetailSelect,
-  readingTimeFor,
-} from '@/lib/newsroom-select';
+import { articleDetailSelect, buildArticleUpdate } from '@/lib/newsroom-select';
 import { CONTENT_TAG, articleTag } from '@/lib/content-api';
 
 export const runtime = 'nodejs';
+
+/** Prisma's foreign-key constraint failure. Matched without importing the
+ *  runtime error class, which drags the client into the bundle. */
+function isForeignKeyViolation(err: unknown): boolean {
+  return typeof err === 'object' && err !== null && (err as { code?: string }).code === 'P2003';
+}
 
 type Params = { params: Promise<{ id: string }> };
 
@@ -45,20 +46,13 @@ export async function PATCH(request: Request, { params }: Params) {
   const { id } = await params;
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
 
-  const data: Prisma.ArticleUpdateInput = {};
-  for (const field of EDITABLE_FIELDS) {
-    if (field in body) (data as Record<string, unknown>)[field] = body[field];
+  const built = buildArticleUpdate(body);
+  if ('error' in built) {
+    return NextResponse.json({ message: built.error }, { status: 400 });
   }
+  const { data } = built;
   if (Object.keys(data).length === 0) {
     return NextResponse.json({ message: 'Nothing to update' }, { status: 400 });
-  }
-
-  // publishAt arrives as an ISO string or null.
-  if ('publishAt' in data) {
-    data.publishAt = body.publishAt ? new Date(body.publishAt as string) : null;
-  }
-  if ('bodyJson' in data) {
-    data.readingTime = readingTimeFor(body.bodyJson);
   }
 
   const existing = await prisma.article.findUnique({
@@ -67,11 +61,27 @@ export async function PATCH(request: Request, { params }: Params) {
   });
   if (!existing) return NextResponse.json({ message: 'Article not found' }, { status: 404 });
 
-  const article = await prisma.article.update({
-    where: { id },
-    data,
-    select: articleDetailSelect,
-  });
+  let article;
+  try {
+    article = await prisma.article.update({
+      where: { id },
+      data,
+      select: articleDetailSelect,
+    });
+  } catch (err) {
+    // A topicId, countryId or heroImageId that names a row which does not
+    // exist. Values are validated in shape before this point, so reaching here
+    // means a real reference problem — the writer's mistake, or a row deleted
+    // between the editor loading and this save. Either way it is a 400, not the
+    // 500 an unhandled Prisma error would produce.
+    if (isForeignKeyViolation(err)) {
+      return NextResponse.json(
+        { message: 'That country, topic or image no longer exists' },
+        { status: 400 },
+      );
+    }
+    throw err;
+  }
 
   // Editing a live story has to reach the Reader; editing a draft has nothing
   // to invalidate.

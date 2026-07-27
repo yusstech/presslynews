@@ -79,7 +79,7 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
         >
           <div className="overflow-hidden rounded-xl ring-1 ring-border transition-[box-shadow,transform] duration-base ease-editorial group-hover:-translate-y-1 group-hover:shadow-raised group-hover:ring-ink/25">
             {hero.heroImage ? (
-              // eslint-disable-next-line @next/next/no-img-element
+               
               // The hero is the LCP element on this page — `priority` makes it
               // eager and high-priority; everything else stays lazy.
               <MediaImage

@@ -156,7 +156,7 @@ async function main() {
   // makes the Reader impossible to review honestly.
   await seedHeroImages(prisma, users['editor@pressly.dev']!.id);
 
-  // eslint-disable-next-line no-console
+   
   console.log('Seeded. Login with editor@pressly.dev / ' + PASSWORD);
 }
 

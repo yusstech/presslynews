@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Button, Container, Field, Input } from '@pressly/ui';
-import { Link, useRouter } from '@/i18n/navigation';
+import { useRouter } from '@/i18n/navigation';
 import { useAuth } from '@/newsroom/auth-context';
 import { ApiError } from '@/lib/api';
 
@@ -70,14 +70,6 @@ export default function LoginPage() {
             {busy ? t('signingIn') : t('signIn')}
           </Button>
         </form>
-        <p className="mt-4 text-center">
-          <Link
-            href="/newsroom/forgot-password"
-            className="inline-block py-1 font-sans text-ui-sm text-accent hover:underline"
-          >
-            {t('forgotPassword')}
-          </Link>
-        </p>
       </div>
     </Container>
   );

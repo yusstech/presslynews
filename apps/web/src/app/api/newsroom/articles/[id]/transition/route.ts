@@ -55,7 +55,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
   const data: Prisma.ArticleUpdateInput = { status: to };
   // Stamp publishedAt the first time a story goes live and never again — it is
   // the story's date of record, not the date of the last edit.
-  if (to === 'PUBLISHED' && !article.publishedAt) data.publishedAt = new Date();
+  //
+  // `publishAt` wins when it is set, which is what /api/cron/publish-due
+  // already does. This route used to ignore it and always stamp `now`, so the
+  // two publish paths disagreed: releasing a story on its schedule kept the
+  // intended date, while pressing Publish on the same story overwrote it with
+  // today. That is not cosmetic — `publishedAt` is the article's date on the
+  // page, its `lastmod` in the sitemap and its `datePublished` in JSON-LD, and
+  // every project record here carries a real historic date.
+  if (to === 'PUBLISHED' && !article.publishedAt) {
+    data.publishedAt = article.publishAt ?? new Date();
+  }
 
   const [updated] = await prisma.$transaction([
     prisma.article.update({ where: { id }, data, select: articleDetailSelect }),

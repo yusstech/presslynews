@@ -61,7 +61,7 @@ async function main() {
   const prisma = new PrismaClient();
   try {
     const { countries, topics } = await seedTaxonomy(prisma);
-    // eslint-disable-next-line no-console
+     
     console.log(
       `Taxonomy seeded: ${Object.keys(countries).length} countries, ${Object.keys(topics).length} topics.`,
     );

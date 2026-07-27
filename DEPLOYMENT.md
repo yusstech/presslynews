@@ -126,9 +126,16 @@ least 12 characters.
 > and it creates demo accounts with a published password. It refuses to run when
 > `NODE_ENV=production`; the guard is deliberate.
 
-There is no password reset — the forgot-password screen posts to an endpoint
-that does not exist. `create-admin` is the recovery path until that is either
-built or removed.
+There is no password reset, by decision. Self-service reset needs transactional
+email, and the mail layer was removed along with the API and the worker — adding
+it back for a single administrator is the shape of thing that collapse existed
+to undo. The screens that used to offer it have been deleted rather than left
+posting to an endpoint that never existed.
+
+**`pnpm db:create-admin` is the recovery path.** It also resets the password of
+an existing account, so run it from a machine with `DIRECT_DATABASE_URL` if you
+are ever locked out. If a real editorial team ever needs self-service reset,
+that is the point to reintroduce email.
 
 ## 5. Verify
 
