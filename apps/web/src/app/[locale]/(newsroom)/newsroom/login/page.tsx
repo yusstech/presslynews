@@ -11,8 +11,11 @@ export default function LoginPage() {
   const t = useTranslations('auth');
   const { login } = useAuth();
   const router = useRouter();
-  const [email, setEmail] = useState('editor@pressly.dev');
-  const [password, setPassword] = useState('pressly123');
+  // Empty. These were prefilled with a demo account during Phase 4 and the
+  // defaults shipped — a production login form arriving with someone's
+  // credentials already typed into it.
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -74,9 +77,6 @@ export default function LoginPage() {
           >
             {t('forgotPassword')}
           </Link>
-        </p>
-        <p className="mt-6 text-center font-mono text-xs text-ink-muted">
-          demo · editor@pressly.dev · pressly123
         </p>
       </div>
     </Container>
