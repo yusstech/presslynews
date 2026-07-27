@@ -1415,6 +1415,17 @@ const STORIES: StoryInput[] = [
     country: 'sa',
     language: 'en',
     articleType: 'ANALYSIS',
+    // benjamin lehman / Unsplash, photo-1720645042951. Verified free under the
+    // Unsplash License and confirmed to serve a real JPEG before publishing;
+    // Unsplash+ results look identical in search but are paid, and their URLs
+    // start plus.unsplash.com/premium_photo- rather than images.unsplash.com.
+    image:
+      'https://images.unsplash.com/photo-1720645042951-014193bb5c61?fm=jpg&q=80&w=2400&auto=format',
+    imageAlt: 'A high-voltage transmission line against a clear blue sky.',
+    imageCaption:
+      'A high-voltage transmission line. Illustrative — not a photograph of the Saudi network.',
+    imageCredit: 'benjamin lehman / Unsplash',
+    imageUsageRights: 'Unsplash License',
     body: [
       `[Saudi Electricity Company](${SEC}) is investing up to $58.7 billion — around 220 billion riyals — in its transmission and distribution networks between 2025 and 2030, according to trade reporting on the programme. Roughly $36 billion is directed at the transmission backbone and $22.7 billion at distribution. It is the largest single grid programme the kingdom has undertaken.`,
 
@@ -1492,6 +1503,13 @@ const STORIES: StoryInput[] = [
     country: 'ng',
     language: 'en',
     articleType: 'ANALYSIS',
+    image:
+      'https://images.unsplash.com/photo-1509389807183-f0fbe962761a?fm=jpg&q=80&w=2400&auto=format',
+    imageAlt: 'High-voltage switchgear and busbars inside a transmission substation.',
+    imageCaption:
+      'Switchgear inside a transmission substation. Illustrative — not a photograph of the Nigerian grid.',
+    imageCredit: 'American Public Power Association / Unsplash',
+    imageUsageRights: 'Unsplash License',
     body: [
       `The [Transmission Company of Nigeria](${TCN_NG}) says the national grid can now carry 8,700 megawatts, up from roughly 7,000 — an increase of about 1,700 MW. Over the same period the highest generation the country has ever achieved was 5,801.84 MW, recorded on 4 March 2025. On that day the grid delivered 128,370.75 megawatt-hours, the most in Nigerian history.`,
 
@@ -1558,6 +1576,17 @@ const STORIES: StoryInput[] = [
     country: 'sy',
     language: 'en',
     articleType: 'ANALYSIS',
+    // Deliberately a neutral transmission structure rather than anything
+    // resembling war damage. A stock photograph of a ruin, captioned as
+    // illustrative, still reads to a scrolling reader as documentary evidence
+    // of a place the photograph has nothing to do with.
+    image:
+      'https://images.unsplash.com/photo-1509390484649-e8f3d1bb0b6d?fm=jpg&q=80&w=2400&auto=format',
+    imageAlt: 'A high-voltage transmission structure.',
+    imageCaption:
+      'A high-voltage transmission structure. Illustrative — not a photograph of the Syrian network.',
+    imageCredit: 'Platte River Power Authority / Unsplash',
+    imageUsageRights: 'Unsplash License',
     body: [
       `The [World Bank](${WORLD_BANK}) approved a $146 million grant on 25 June 2025 for the [Syria Electricity Emergency Project](${WB_SEEP}), which will rehabilitate damaged high-voltage transmission lines — including two critical 400 kV interconnector lines — along with damaged high-voltage transformer substations, and supply spare parts and maintenance equipment. The project is implemented by the Public Establishment for Transmission and Distribution of Electricity.`,
 
@@ -1633,6 +1662,16 @@ const STORIES: StoryInput[] = [
     country: 'sa',
     language: 'en',
     articleType: 'ANALYSIS',
+    // An oil tanker in Los Angeles, not the Gulf. The caption says so, because
+    // an unlabelled tanker above an article about Hormuz invites the reader to
+    // assume they are looking at one.
+    image:
+      'https://images.unsplash.com/photo-1582517378602-f109b395ce40?fm=jpg&q=80&w=2400&auto=format',
+    imageAlt: 'An aerial view of a red oil tanker at anchor in harbour waters.',
+    imageCaption:
+      'An oil tanker at anchor in San Pedro, Los Angeles. Illustrative — not a vessel connected to the events described.',
+    imageCredit: 'Venti Views / Unsplash',
+    imageUsageRights: 'Unsplash License',
     body: [
       `Brent crude rose by about 65 per cent — $46 a barrel — by the end of March 2026, the largest monthly increase ever recorded, according to [World Bank](${WORLD_BANK}) analysis of the [Strait of Hormuz disruption](${WB_HORMUZ}). Global oil supply fell by 10.1 million barrels a day over the same month. Oil passed $100 a barrel again in late July as the conflict widened.`,
 
@@ -1706,6 +1745,17 @@ const STORIES: StoryInput[] = [
     country: 'ng',
     language: 'en',
     articleType: 'ANALYSIS',
+    // Ghana, not Nigeria. West African rather than Nigerian is close enough to
+    // pass unnoticed and exactly why the caption has to name the country: a
+    // filling station over a piece about Nigerian fuel prices otherwise reads
+    // as a photograph of the thing being described.
+    image:
+      'https://images.unsplash.com/photo-1723021939081-31f4ab31456a?fm=jpg&q=80&w=2400&auto=format',
+    imageAlt: 'A filling station at night, with people walking through the forecourt.',
+    imageCaption:
+      'A filling station at night in Kasoa, Ghana. Illustrative — not a Nigerian forecourt.',
+    imageCredit: 'Kingsley Hemans / Unsplash',
+    imageUsageRights: 'Unsplash License',
     body: [
       `The [World Bank](${WORLD_BANK}) forecasts Nigerian economic growth of about 4.2 per cent for 2026. Over the same period fuel prices have risen more than 50 per cent during the conflict in the Middle East, and inflation — which had eased to 15.06 per cent in February 2026 from around 33 per cent in December 2024 — has come under renewed pressure.`,
 
