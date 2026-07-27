@@ -102,6 +102,13 @@ describe('slugify', () => {
     expect(slugify('Übertragungsnetz')).toMatch(/^ubertragungsnetz-/);
   });
 
+  it('drops apostrophes rather than treating them as word breaks', () => {
+    // Otherwise "Nigeria's Grid" slugs to "nigeria-s-grid", which reads as a
+    // typo in a URL and splits the word for a search engine.
+    expect(slugify("Nigeria's Grid")).toMatch(/^nigerias-grid-/);
+    expect(slugify('Nigeria’s Grid')).toMatch(/^nigerias-grid-/);
+  });
+
   it('keeps non-Latin scripts instead of reducing them to a bare suffix', () => {
     expect(slugify('شبكة الكهرباء')).toMatch(/^شبكة-الكهرباء-/);
   });

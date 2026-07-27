@@ -106,10 +106,20 @@ function slugify(headline: string): string {
   return (
     headline
       .toLowerCase()
+      // Apostrophes vanish rather than separate: "Nigeria's Grid" is
+      // "nigerias-grid", not "nigeria-s-grid". Both straight and typographic,
+      // since headlines are written with the latter.
+      .replace(/['’]/g, '')
+      // NFKD splits an accented letter into its base plus a combining mark. The
+      // base is what we want; the mark is not a letter, so without this the
+      // next rule turns it into a separator and "Réseau" becomes "re-seau".
       .normalize('NFKD')
+      .replace(/\p{M}+/gu, '')
       .replace(/[^\p{L}\p{N}]+/gu, '-')
       .replace(/^-|-$/g, '')
-      .slice(0, 70) || `story-${Date.now()}`
+      .slice(0, 70)
+      // A trailing hyphen can reappear after the slice.
+      .replace(/-$/, '') || `story-${Date.now()}`
   );
 }
 
@@ -361,6 +371,28 @@ const MOE_SA = 'https://www.moenergy.gov.sa/en';
 const PETDE_SY = 'http://moe.gov.sy/';
 const REA_NG = 'https://rea.gov.ng/';
 const TCN_NG = 'https://www.tcn.org.ng/';
+
+/**
+ * Sources for the three market analyses below.
+ *
+ * Unlike the five project records — which come from notarised completion
+ * certificates the client holds — these pieces are assembled from public
+ * reporting, so every figure in them is attributed in the body and linked here.
+ * Where a number reaches us through a trade publication rather than the
+ * institution itself, the text says so; that distinction is the difference
+ * between analysis and assertion.
+ *
+ * Checked before use: `worldbank.org` and the SEEP press release both answer
+ * 200, as does `jica.go.jp`. `afdb.org` answers 403 to curl even with a browser
+ * user-agent — a WAF or geo rule rather than an outage, the same behaviour
+ * `tcn.org.ng` shows above. It is linked on that basis, not on a verified fetch
+ * from this machine.
+ */
+const WORLD_BANK = 'https://www.worldbank.org/';
+const WB_SEEP =
+  'https://www.worldbank.org/en/news/press-release/2025/06/25/syria-world-bank-us-146-million-grant-to-improve-electricity-supply-and-support-sector-development';
+const AFDB = 'https://www.afdb.org/';
+const JICA = 'https://www.jica.go.jp/english/';
 
 const STORIES: StoryInput[] = [
   {
@@ -1352,6 +1384,221 @@ const STORIES: StoryInput[] = [
           ],
         },
       },
+    ],
+  },
+
+  /* ------------------------------------------------------ market analyses --
+   * The five records above document work this client completed. These three
+   * describe the networks that work sits inside — the same three countries,
+   * from public reporting rather than from certificates.
+   * ---------------------------------------------------------------------- */
+
+  {
+    headline: 'Saudi Arabia Commits $58.7bn to Its Transmission Backbone Through 2030',
+    subheadline: 'Fourteen thousand kilometres of new line, 130 substations and nine HVDC links.',
+    seoTitle: 'Saudi Grid Investment 2025–2030 | $58.7bn Transmission Plan',
+    metaDescription:
+      'Saudi Electricity Company is investing up to $58.7bn in transmission and distribution between 2025 and 2030, adding around 14,000 km of line and 130 high-voltage substations.',
+    summary:
+      'Saudi Electricity Company has committed up to $58.7 billion to its transmission and distribution networks between 2025 and 2030, with $36 billion of that directed at the transmission backbone alone. The programme adds roughly 14,000 kilometres of line and 130 high-voltage substations, and pushes the kingdom toward a 160,000-kilometre network with nine new HVDC interconnections.',
+    publishedAt: '2026-07-20',
+    topic: 'energy',
+    country: 'sa',
+    language: 'en',
+    articleType: 'ANALYSIS',
+    body: [
+      `[Saudi Electricity Company](${SEC}) is investing up to $58.7 billion — around 220 billion riyals — in its transmission and distribution networks between 2025 and 2030, according to trade reporting on the programme. Roughly $36 billion is directed at the transmission backbone and $22.7 billion at distribution. It is the largest single grid programme the kingdom has undertaken.`,
+
+      'The figures describe a network being rebuilt at a pace that is unusual anywhere.',
+
+      `Around 14,000 kilometres of [transmission line](/en/glossary#transmission-line) are planned — approximately 12,900 kilometres of overhead line and 1,100 kilometres of underground cable. Alongside them, 130 high-voltage [substations](/en/glossary#substation) are to be built or upgraded, adding some 135,000 [MVA](/en/glossary#mva) of transformation capacity.`,
+
+      'For scale: 135,000 MVA is more than four hundred times the installed capacity of a single large substation of the kind built for a regional network.',
+
+      { h2: 'What the network looks like now' },
+
+      'The starting point is already substantial. Analysis by REGlobal put the network at approximately 92,999 circuit kilometres across the 132 kV to 380 kV levels as of 2022, with transformer capacity of 474,262 MVA. The higher-voltage tier — 230 kV and 380 kV — grew from 37,783 circuit kilometres in 2018 to 49,649 in 2022.',
+
+      'Growth has continued since. Company reporting for 2025 put transmission and fibre-optic networks up 4.9 per cent on the year, passing 104,600 circuit kilometres of transmission line and 104,400 kilometres of fibre.',
+
+      `That the two figures track each other so closely is not a coincidence. Modern high-voltage line is strung with [OPGW](/en/glossary#opgw) — a cable whose outer layers shield the circuit from lightning while optical fibres inside carry protection and control data. Build a kilometre of line and you generally build a kilometre of communications with it.`,
+
+      { h2: 'The target: 160,000 kilometres and nine HVDC links' },
+
+      'By 2030 the company aims to operate approximately 160,000 kilometres of transmission line and to have commissioned nine new HVDC links, both between regions inside the kingdom and across its borders.',
+
+      'HVDC — high-voltage direct current — is the technology of choice for moving bulk power over very long distances, or between networks that do not run in step with one another. Saudi Arabia has both problems: a landmass that separates generation from demand by hundreds of kilometres, and neighbours whose grids it wants to trade with.',
+
+      { h2: 'Trading power across borders' },
+
+      'The cross-border work is the most visible part of the programme.',
+
+      'The Saudi–Egypt interconnector is a 3 GW HVDC link running some 1,300 kilometres of overhead line — around 965 kilometres inside Saudi Arabia and 335 in Egypt — joined by a 20-kilometre submarine cable across the Gulf of Aqaba. A first phase of 1,500 MW was targeted for June 2025 and a second for that November. The Japan Bank for International Cooperation lent $207 million toward it in 2023.',
+
+      `Northward, a 164 circuit-kilometre, 400 kV overhead line connects Qurayyat in Saudi Arabia to East Amman in Jordan, with an initial 500 MW of capacity expandable to 1,000 MW, and a [GIS substation](/en/glossary#substation) on the Saudi side. Work on interconnections with Iraq and India is also under way, and an upgrade contracted in March 2023 at the Al-Fadhili HVDC converter station enables 1,800 MW of exchange among GCC countries.`,
+
+      { h2: 'Why the numbers reach 380 kV' },
+
+      `Almost all of this is specified at 380 kV or above. That is a deliberate choice rather than an engineering flourish: at a given power, raising voltage lowers current, and lower current means less energy lost as heat over the length of a route. It is the reason long-distance transfer happens at these levels and local distribution does not.`,
+
+      `It is also why lines of this class are built the way they are — [quad bundles](/en/glossary#bundled-conductor) of four sub-conductors per phase to hold down losses and corona, [suspension towers](/en/glossary#suspension-tower) through the straight sections, heavier [angle](/en/glossary#angle-tower) and [dead-end](/en/glossary#dead-end-tower) structures where the route turns or terminates.`,
+
+      `Pressly has documented two lines built to that specification in the north-west of the kingdom: the [Tabuk 380 kV line](/en/article/samaya-group-completes-the-tabuk-380-kv-transmission-line), 112.5 kilometres and 309 towers, and the [Al-Jawf 380 kV line](/en/article/samaya-group-completes-the-al-jawf-380-kv-transmission-line), 107 kilometres and 279 towers. Both were delivered under the National Grid Reinforcement Programme that this decade of investment continues.`,
+
+      { h2: 'The scale in one table' },
+
+      {
+        table: {
+          caption: 'Saudi Electricity Company transmission and distribution programme, 2025–2030',
+          header: ['Measure', 'Figure'],
+          rows: [
+            ['Total investment', 'Up to $58.7bn (SAR 220bn)'],
+            ['Transmission backbone', '$36bn'],
+            ['Distribution', '$22.7bn'],
+            ['New transmission line', '~14,000 km (12,900 overhead, 1,100 underground)'],
+            ['High-voltage substations', '130 built or upgraded'],
+            ['Substation capacity added', '~135,000 MVA'],
+            ['Network target by 2030', '~160,000 km'],
+            ['New HVDC links by 2030', '9'],
+          ],
+        },
+      },
+
+      { rule: true },
+
+      'Figures in this article are drawn from public reporting on the programme and from published analysis of the Saudi network; they have not been independently verified by Pressly. Where a number is attributed to company reporting, it reflects what has been publicly stated rather than an audited figure.',
+    ],
+  },
+
+  {
+    headline: 'Nigeria’s Grid Can Now Carry More Power Than the Country Generates',
+    subheadline: 'Wheeling capacity has reached 8,700 MW. Peak generation is still under 6,000.',
+    seoTitle: 'Nigeria Grid Capacity 2026 | TCN Reaches 8,700 MW Wheeling',
+    metaDescription:
+      'The Transmission Company of Nigeria has raised wheeling capacity from about 7,000 MW to 8,700 MW, while record peak generation stands at 5,801.84 MW — moving the constraint off the grid.',
+    summary:
+      'The Transmission Company of Nigeria says its wheeling capacity has reached 8,700 megawatts, up from around 7,000, after commissioning 82 transformers between January 2024 and November 2025. Record peak generation over the same period was 5,801.84 MW — meaning the transmission network can now carry substantially more power than the country produces.',
+    publishedAt: '2026-07-23',
+    topic: 'energy',
+    country: 'ng',
+    language: 'en',
+    articleType: 'ANALYSIS',
+    body: [
+      `The [Transmission Company of Nigeria](${TCN_NG}) says the national grid can now carry 8,700 megawatts, up from roughly 7,000 — an increase of about 1,700 MW. Over the same period the highest generation the country has ever achieved was 5,801.84 MW, recorded on 4 March 2025. On that day the grid delivered 128,370.75 megawatt-hours, the most in Nigerian history.`,
+
+      'Put the two numbers beside each other and the significance is hard to miss. The transmission network is no longer the binding constraint on Nigerian electricity supply.',
+
+      'That is a genuine reversal. For most of the past two decades the grid was the thing that failed — the reason power generated in the south could not reach demand in the north, and the reason a fault in one place took the whole system down with it.',
+
+      { h2: 'What was actually built' },
+
+      `Between January 2024 and November 2025 the company commissioned 82 new [power transformers](/en/glossary#power-transformer), adding more than 8,500 [MVA](/en/glossary#mva) to the grid. Sule Ahmed Abdulaziz, TCN’s managing director and chief executive, has pointed to that programme as the basis for the higher wheeling figure.`,
+
+      `The financing came largely from outside. More than $1.4 billion has been mobilised from development lenders — among them the [World Bank](${WORLD_BANK}), the [African Development Bank](${AFDB}) and the [Japan International Cooperation Agency](${JICA}).`,
+
+      `A transformer is not, on its own, capacity. It has to arrive with the [bays](/en/glossary#bay) that connect it, the [circuit breakers](/en/glossary#circuit-breaker) and [disconnectors](/en/glossary#disconnector) that isolate it, the [protection relays](/en/glossary#protection-relay) that decide when to open them, and the [SCADA](/en/glossary#scada) that lets an operator see any of it. Eighty-two transformers implies a great deal of switchgear alongside them.`,
+
+      `Pressly has documented two such sites. The [Kwara 330 kV substation](/en/article/icco-delivers-the-kwara-330-kv-transmission-substation) combines two 150 MVA transformers, six 330 kV bays and a variable [line reactor](/en/glossary#variable-line-reactor) on a greenfield site. The [Nnewi substation](/en/article/icco-delivers-the-nnewi-800-mva-transmission-substation) carries four transformers totalling 800 MVA across three switchyards in Anambra State.`,
+
+      { h2: 'The constraint has moved, not disappeared' },
+
+      'A grid that can carry more than the country generates is not a solved grid. It is a grid whose problem now sits somewhere else.',
+
+      'Nigeria’s shortfall has moved upstream to generation — gas supply, plant availability, the commercial arrangements that determine whether a generator runs at all — and downstream to distribution, where the companies that actually deliver power to customers remain the weakest link in the chain.',
+
+      'Federal targets put transmission capacity at 10,000 MW by the end of 2026. Reaching it would widen the gap between what the grid can carry and what the country produces still further.',
+
+      'There is a reasonable argument that this is the correct order to build in. Transmission takes longest to plan, to right-of-way, and to construct; a network built only to today’s generation would constrain tomorrow’s. But capacity that is never used is also capital that is not yet earning, and the case for continuing to build it rests on generation eventually catching up.',
+
+      { h2: 'The figures' },
+
+      {
+        table: {
+          caption: 'Nigerian transmission capacity and generation',
+          header: ['Measure', 'Figure'],
+          rows: [
+            ['Wheeling capacity', '8,700 MW'],
+            ['Previous capacity', '~7,000 MW'],
+            ['Capacity added', '~1,700 MW'],
+            ['Transformers commissioned', '82 (Jan 2024 – Nov 2025)'],
+            ['Substation capacity added', '~8,500 MVA'],
+            ['Record peak generation', '5,801.84 MW (4 March 2025)'],
+            ['Record daily energy', '128,370.75 MWh'],
+            ['Development financing mobilised', 'Over $1.4bn'],
+            ['Federal target', '10,000 MW by end 2026'],
+          ],
+        },
+      },
+
+      { rule: true },
+
+      'Capacity and generation figures in this article are as stated publicly by the Transmission Company of Nigeria and reported in the Nigerian press. Pressly has not independently verified them.',
+    ],
+  },
+
+  {
+    headline: 'The World Bank Returns to Syria’s Grid With a $146m Emergency Grant',
+    subheadline: 'Two 400 kV interconnectors, damaged substations, and a country on four hours of power.',
+    seoTitle: 'Syria Electricity Emergency Project | $146m World Bank Grant',
+    metaDescription:
+      'The World Bank approved a $146m grant in June 2025 for the Syria Electricity Emergency Project, rehabilitating high-voltage transmission lines, two 400 kV interconnectors and damaged substations.',
+    summary:
+      'The World Bank approved a $146 million grant in June 2025 for the Syria Electricity Emergency Project, which will rehabilitate damaged high-voltage transmission lines — including two critical 400 kV interconnectors — and transformer substations. Years of conflict had limited supply to two to four hours a day against a reconstruction bill estimated at around $40 billion.',
+    publishedAt: '2026-07-26',
+    topic: 'energy',
+    country: 'sy',
+    language: 'en',
+    articleType: 'ANALYSIS',
+    body: [
+      `The [World Bank](${WORLD_BANK}) approved a $146 million grant on 25 June 2025 for the [Syria Electricity Emergency Project](${WB_SEEP}), which will rehabilitate damaged high-voltage transmission lines — including two critical 400 kV interconnector lines — along with damaged high-voltage transformer substations, and supply spare parts and maintenance equipment. The project is implemented by the Public Establishment for Transmission and Distribution of Electricity.`,
+
+      'The Bank’s own description of the starting position is blunt: years of conflict have crippled Syria’s national grid, limiting electricity supply to two to four hours daily, and leaving large segments of the population and economy in a persistent state of energy insecurity.',
+
+      'Two to four hours is not a degraded service. It is a country running on generators, with everything that implies for hospitals, water treatment, refrigeration and any business that cannot afford its own diesel.',
+
+      { h2: 'Why interconnectors come first' },
+
+      'That the grant names two 400 kV interconnectors specifically is worth pausing on.',
+
+      `An interconnector carries power between networks rather than within one. For a country whose own generation has collapsed, it is the fastest available route to supply: rather than rebuild power stations — which takes years — you repair the lines that let a neighbour’s surplus reach your customers.`,
+
+      'Jordan has pledged to supply 250 to 300 megawatts and to send technical teams to assess the grid’s readiness. Arrangements with Qatar and Türkiye are expected to raise generation available to Syria from around 1,600 MW to 3,200 MW, against installed domestic capacity reported at roughly 1,500 MW in 2025.',
+
+      `Repairing an interconnector is not simply restringing wire. The line needs its [earthwire](/en/glossary#earthwire) and [OPGW](/en/glossary#opgw) intact, because protection and control data has to travel with the power; the [substations](/en/glossary#substation) at each end need working [circuit breakers](/en/glossary#circuit-breaker), [instrument transformers](/en/glossary#instrument-transformer) and [protection relays](/en/glossary#protection-relay); and both networks must agree on how faults will be cleared before either will energise the connection.`,
+
+      { h2: 'The scale of what remains' },
+
+      'Against the $146 million grant sits an estimated $40 billion required to rebuild and modernise the sector as a whole. The grant is emergency triage, not reconstruction.',
+
+      'Work has been proceeding regardless. The transmission and distribution establishment announced a series of strategic projects completed in December 2025 across Homs, Hama and Deir Ezzor, aimed at reinforcing the national grid. Solar plants totalling 40 megawatts were commissioned in the Hassia Industrial Zone and connected to the grid.',
+
+      `Pressly has documented one 400 kV corridor in the south of the country: the [Rural Damascus–Daraa transmission line](/en/article/icco-completes-the-rural-damascus-daraa-400-kv-transmission-line), 107 kilometres across 321 tower positions, with two 400 kV circuits, more than 2,500 kilometres of phase conductor and enhanced earthing at 84 tower positions.`,
+
+      { h2: 'What a functioning grid would mean' },
+
+      'It is easy to read grid investment as a technical matter. In Syria it is not.',
+
+      'The difference between four hours of power and twenty is the difference between a clinic that can refrigerate vaccines and one that cannot; between a workshop that can operate and one that cannot; between a household that can pump water and one that queues for it. Transmission is the least visible part of that chain and among the most decisive.',
+
+      {
+        table: {
+          caption: 'Syria Electricity Emergency Project and sector context',
+          header: ['Measure', 'Figure'],
+          rows: [
+            ['World Bank grant', '$146m, approved 25 June 2025'],
+            ['Implementing body', 'Public Establishment for Transmission and Distribution of Electricity'],
+            ['Scope', 'HV transmission lines, two 400 kV interconnectors, transformer substations'],
+            ['Daily supply before the project', '2–4 hours'],
+            ['Installed capacity (2025)', '~1,500 MW'],
+            ['Jordanian supply pledged', '250–300 MW'],
+            ['Estimated sector reconstruction cost', '~$40bn'],
+          ],
+        },
+      },
+
+      { rule: true },
+
+      'Grant terms, project scope and supply figures are as stated in the World Bank’s announcement of 25 June 2025. Capacity and regional supply figures are drawn from public reporting and have not been independently verified by Pressly.',
     ],
   },
 ];

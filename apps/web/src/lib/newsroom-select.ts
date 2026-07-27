@@ -163,6 +163,9 @@ export function readingTimeFor(bodyJson: unknown): number {
 export function slugify(input: string): string {
   const base = input
     .toLowerCase()
+    // Apostrophes vanish rather than separate: "Nigeria's Grid" should slug to
+    // "nigerias-grid", not "nigeria-s-grid".
+    .replace(/['’]/g, '')
     // NFKD splits "é" into "e" plus a combining acute. That is the point — it
     // is what lets an accented letter reduce to its ASCII base — but the
     // accent is a Mark, not a Letter, so the next rule turned it into a

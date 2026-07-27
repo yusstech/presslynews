@@ -7,7 +7,11 @@ import { ALL_TERMS, GLOSSARY } from '@/content/glossary';
  * article slug that does not exist, a definition that does not define.
  */
 
-/** The five published project records. A `seeAlso` outside this set is a typo. */
+/**
+ * The five project records. Glossary entries point at these rather than at the
+ * market analyses, which cite the glossary rather than being cited by it — a
+ * `seeAlso` outside this set is a typo.
+ */
 const PUBLISHED = new Set([
   'samaya-group-completes-the-tabuk-380-kv-transmission-line',
   'samaya-group-completes-the-al-jawf-380-kv-transmission-line',
