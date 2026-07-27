@@ -39,16 +39,26 @@ function Editor() {
   const pending = useRef<Record<string, unknown>>({});
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const [loadFailed, setLoadFailed] = useState<string | null>(null);
+
   useEffect(() => {
+    // These three are one `Promise.all`, so any single failure rejects the
+    // batch. Without a catch that meant `article` stayed null and the page sat
+    // on "Loading…" forever — which is how a missing taxonomy endpoint went
+    // unnoticed: the editor did not look broken, it looked slow.
     Promise.all([
       api<NewsroomArticle>(`/newsroom/articles/${id}`),
       api<Taxo[]>('/taxonomy/countries'),
       api<Taxo[]>('/taxonomy/topics'),
-    ]).then(([a, c, t]) => {
-      setArticle(a);
-      setCountries(c);
-      setTopics(t);
-    });
+    ])
+      .then(([a, c, t]) => {
+        setArticle(a);
+        setCountries(c);
+        setTopics(t);
+      })
+      .catch((err) => {
+        setLoadFailed(err instanceof ApiError ? err.message : 'Could not load this story.');
+      });
   }, [id]);
 
   const flush = useCallback(async () => {
@@ -94,6 +104,23 @@ function Editor() {
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Transition failed');
     }
+  }
+
+  if (loadFailed) {
+    return (
+      <Container className="py-20">
+        <p className="font-serif text-lg text-ink">This story could not be opened</p>
+        <p className="mt-2 font-sans text-sm text-ink-muted">{loadFailed}</p>
+        <p className="mt-6">
+          <Link
+            href="/newsroom"
+            className="font-sans text-sm text-accent underline underline-offset-4"
+          >
+            Back to stories
+          </Link>
+        </p>
+      </Container>
+    );
   }
 
   if (!article || !user) {
