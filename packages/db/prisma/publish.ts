@@ -382,13 +382,22 @@ const TCN_NG = 'https://www.tcn.org.ng/';
  * institution itself, the text says so; that distinction is the difference
  * between analysis and assertion.
  *
- * Checked before use: `worldbank.org` and the SEEP press release both answer
- * 200, as does `jica.go.jp`. `afdb.org` answers 403 to curl even with a browser
- * user-agent — a WAF or geo rule rather than an outage, the same behaviour
- * `tcn.org.ng` shows above. It is linked on that basis, not on a verified fetch
- * from this machine.
+ * Checked before use: `worldbank.org`, the SEEP press release, the Hormuz
+ * analysis, `jica.go.jp` and `cbn.gov.ng` all answer 200.
+ *
+ * `afdb.org`, `iea.org` and `imf.org` answer 403 — or, for the IMF, a 308 loop
+ * — to curl even with a browser user-agent. That is a WAF or geo rule rather
+ * than an outage, the same behaviour `tcn.org.ng` shows above; all three resolve
+ * normally in a browser. They are linked on that basis rather than on a verified
+ * fetch from this machine, which is worth knowing before anyone "fixes" a
+ * supposedly dead link.
  */
 const WORLD_BANK = 'https://www.worldbank.org/';
+const WB_HORMUZ =
+  'https://blogs.worldbank.org/en/opendata/strait-of-hormuz-disruption-sends-oil-prices-surging';
+const IEA = 'https://www.iea.org/';
+const IMF = 'https://www.imf.org/';
+const CBN = 'https://www.cbn.gov.ng/';
 const WB_SEEP =
   'https://www.worldbank.org/en/news/press-release/2025/06/25/syria-world-bank-us-146-million-grant-to-improve-electricity-supply-and-support-sector-development';
 const AFDB = 'https://www.afdb.org/';
@@ -1599,6 +1608,163 @@ const STORIES: StoryInput[] = [
       { rule: true },
 
       'Grant terms, project scope and supply figures are as stated in the World Bank’s announcement of 25 June 2025. Capacity and regional supply figures are drawn from public reporting and have not been independently verified by Pressly.',
+    ],
+  },
+
+  /* ------------------------------------------------------------- economics --
+   * Two pieces outside the power beat, both anchored to institutional data.
+   * Note what these deliberately are not: war reporting. Pressly has no
+   * correspondents, and casualty counts and battlefield claims from
+   * belligerents are contested, fast-moving and propagandised. What can be
+   * reported responsibly from a desk is the measurable economic consequence,
+   * which is what these do — World Bank figures, named and dated.
+   * ---------------------------------------------------------------------- */
+
+  {
+    headline: 'The Oil Shock, Measured: What Hormuz Did to the Price of Everything',
+    subheadline: 'Brent rose 65 per cent in a month — the largest monthly increase ever recorded.',
+    seoTitle: 'Strait of Hormuz Oil Shock 2026 | Brent Up 65% in a Month',
+    metaDescription:
+      'World Bank data puts the Strait of Hormuz disruption at a 65 per cent monthly rise in Brent and a 10.1 mb/d supply crash — the largest monthly increase on record.',
+    summary:
+      'World Bank figures put the Strait of Hormuz disruption at a 65 per cent rise in Brent crude in a single month, the largest monthly increase ever recorded, alongside a 10.1 million barrel per day collapse in global supply. This is what the numbers say, and what they do not.',
+    publishedAt: '2026-07-24',
+    topic: 'business',
+    country: 'sa',
+    language: 'en',
+    articleType: 'ANALYSIS',
+    body: [
+      `Brent crude rose by about 65 per cent — $46 a barrel — by the end of March 2026, the largest monthly increase ever recorded, according to [World Bank](${WORLD_BANK}) analysis of the [Strait of Hormuz disruption](${WB_HORMUZ}). Global oil supply fell by 10.1 million barrels a day over the same month. Oil passed $100 a barrel again in late July as the conflict widened.`,
+
+      'Those are the measurable facts. This article confines itself to them.',
+
+      'A great deal about this conflict is contested, fast-moving and asserted by parties with an interest in what is believed. Prices, cargo volumes and production figures are not. They are recorded by exchanges and agencies, they are revised in public, and they can be checked.',
+
+      { h2: 'Why one strait moves the whole market' },
+
+      'Roughly 13 million barrels of crude a day move through the Strait of Hormuz — about a fifth of global oil consumption. There is no meaningful way around it. The pipelines that bypass the strait carry a fraction of that volume, and the rest of the world’s spare capacity sits behind the same chokepoint.',
+
+      `The [International Energy Agency](${IEA}) has described the disruption as the largest supply interruption in the history of the oil market. The Iranian Revolutionary Guard Corps announced the closure to shipping allied with the United States and Israel on 2 March 2026; Brent peaked near $118 a barrel shortly after. A ceasefire brokered by Pakistan on 8 April permitted partial reopening before restrictions were reimposed on 19 April.`,
+
+      { h2: 'What the World Bank measured' },
+
+      'The Bank’s figures describe a market that lost supply faster than it lost demand — which is what turns a disruption into a price shock rather than a slowdown.',
+
+      {
+        table: {
+          caption: 'World Bank estimates, Strait of Hormuz disruption',
+          header: ['Measure', 'Estimate'],
+          rows: [
+            ['Brent rise to end-March', '~65% (+$46/bbl), largest monthly rise on record'],
+            ['Global supply fall, March', '10.1 mb/d'],
+            ['Q2 2026 supply decline', '6.9 mb/d (6.6%) year-on-year'],
+            ['Q2 2026 demand decline', '1.5 mb/d'],
+            ['Q2 2026 market deficit', '3.7 mb/d'],
+            ['2026 baseline Brent', '$86/bbl'],
+            ['2027 baseline Brent', '$70/bbl'],
+            ['Upside risk range', '$95–$115/bbl (10–35% above baseline)'],
+          ],
+        },
+      },
+
+      'The Q2 supply decline is the largest quarterly fall since the COVID-19 pandemic. Demand fell too — by 0.8 million barrels a day year-on-year in March, and a forecast 1.5 million in the second quarter — but nowhere near enough to close a 3.7 million barrel deficit.',
+
+      'Non-OPEC+ production outside the region grew by roughly 0.5 million barrels a day, chiefly in the United States. Against a 10.1 million barrel shortfall, that is a rounding error.',
+
+      { h2: 'The forecast is a range, not a number' },
+
+      'It is worth reading the Bank’s own framing carefully. Its baseline has Brent averaging $86 a barrel across 2026 and falling to $70 in 2027 — that is, an expectation that the disruption eases. Its upside risk case is $95 to $115.',
+
+      'A forecast that spans $45 is not a prediction. It is an admission that the outcome depends on a political question no economist can answer: how long the strait stays closed.',
+
+      'Goldman Sachs has said that another month of closure would put Brent above $100 for the year as a whole, with $120 in the third quarter and $115 in the fourth if restricted traffic runs longer than that. Those are a bank’s scenarios, not the World Bank’s, and they are stated here as such.',
+
+      { h2: 'Who this lands on' },
+
+      'The exposure is not evenly distributed, and it is not the producers who suffer most.',
+
+      'Countries that export through the strait lose revenue they cannot ship. Countries that import refined fuel — which includes several large oil producers — pay more for it immediately, and pass that into transport, food and manufacturing costs within weeks. Emerging markets outside the region, among them Brazil, India and Indonesia, are expected to keep growing demand regardless, which keeps the price up for everyone.',
+
+      'The second-order effect is the one that reaches households: an oil shock is an inflation shock with a lag of about a quarter.',
+
+      { rule: true },
+
+      'Price, supply and demand estimates in this article are the World Bank’s, published in its analysis of the disruption, and are identified as estimates in its own text. Volume figures for the strait and the sequence of closures are drawn from public reporting. Pressly has no correspondents in the region and makes no claim about military events, casualties or the conduct of any party.',
+    ],
+  },
+
+  {
+    headline: 'Nigeria Exports Oil and Imports Inflation',
+    subheadline: 'Growth forecast at 4.2 per cent. Fuel prices up more than half.',
+    seoTitle: 'Nigeria Economy 2026 | 4.2% Growth, Fuel Inflation From Oil Shock',
+    metaDescription:
+      'The World Bank forecasts Nigerian growth of about 4.2 per cent in 2026, while fuel prices have risen more than 50 per cent during the Iran conflict — a windfall and a squeeze at once.',
+    summary:
+      'The World Bank forecasts Nigerian economic growth of about 4.2 per cent for 2026, its strongest in over a decade. In the same period fuel prices have risen more than 50 per cent, pushing inflation back up after it had halved. An oil exporter that imports refined fuel receives the windfall and the shock together.',
+    publishedAt: '2026-06-18',
+    topic: 'business',
+    country: 'ng',
+    language: 'en',
+    articleType: 'ANALYSIS',
+    body: [
+      `The [World Bank](${WORLD_BANK}) forecasts Nigerian economic growth of about 4.2 per cent for 2026. Over the same period fuel prices have risen more than 50 per cent during the conflict in the Middle East, and inflation — which had eased to 15.06 per cent in February 2026 from around 33 per cent in December 2024 — has come under renewed pressure.`,
+
+      'Both things are true at once, and the tension between them is the Nigerian economy in one sentence.',
+
+      { h2: 'The windfall' },
+
+      `Oil and gas account for more than 90 per cent of Nigeria’s export earnings and roughly half of government revenue, while contributing only about 10 per cent of GDP. A higher oil price is therefore a fiscal event before it is an economic one: it arrives in the budget rather than in output.`,
+
+      `Growth forecasts have converged around a strong year. The World Bank puts 2026 growth at about 4.2 per cent; the [International Monetary Fund](${IMF}) at 4.4 per cent; the [Central Bank of Nigeria](${CBN}) at 4.49 per cent. On the IMF’s figure it would be the strongest growth in more than a decade.`,
+
+      { h2: 'The squeeze' },
+
+      'The difficulty is that Nigeria has historically exported crude and imported the refined product it burns.',
+
+      'That makes a high oil price a two-sided instrument. Export revenue rises, and so does the cost of the diesel and petrol that move goods, run generators and power small businesses. Fuel prices rising more than half in the space of a conflict does not stay in the fuel line of a household budget; it reaches transport, food and production costs within weeks.',
+
+      'Fiseha Haile, the World Bank’s lead economist for Nigeria, put it plainly in April: “the shock is still being felt through higher inflation.” He added that “inflation is still elevated and under increasing pressure, and that poses risks to incomes and poverty reduction.”',
+
+      'That is the sentence that matters. Growth of 4.2 per cent alongside inflation in the mid-teens is not straightforwardly good news for anyone earning a wage.',
+
+      { h2: 'What had been going right' },
+
+      'The disinflation before the shock was real and substantial. Inflation running near 33 per cent at the end of 2024 and near 15 per cent by early 2026 is a halving in a little over a year.',
+
+      'It was enough for the Central Bank of Nigeria to cut its benchmark Monetary Policy Rate from 27.5 per cent to 26.5 per cent in May 2026 — the first reduction in five years. A single point off a very high rate is a cautious move, and the caution reads as deliberate given what fuel prices were doing at the time.',
+
+      {
+        table: {
+          caption: 'Nigeria, 2026',
+          header: ['Measure', 'Figure'],
+          rows: [
+            ['GDP growth forecast (World Bank)', '~4.2%'],
+            ['GDP growth forecast (IMF)', '4.4%'],
+            ['GDP growth forecast (CBN)', '4.49%'],
+            ['Inflation, February 2026', '15.06%'],
+            ['Inflation, December 2024', '~33%'],
+            ['Monetary Policy Rate', '26.5% (cut from 27.5%, May 2026)'],
+            ['Fuel price rise during the conflict', 'More than 50%'],
+            ['Oil and gas share of export earnings', 'Over 90%'],
+            ['Oil and gas share of government revenue', '~50%'],
+            ['Oil and gas share of GDP', '~10%'],
+          ],
+        },
+      },
+
+      { h2: 'Why the grid is part of this story' },
+
+      'There is a reason a publication that covers transmission infrastructure is writing about fuel prices.',
+
+      'When grid electricity is unavailable, the substitute is a diesel generator. That makes the fuel price a direct input into the cost of running almost any Nigerian business, and it makes every megawatt the grid delivers reliably a megawatt that does not have to be bought at the pump at a price set by events in the Gulf.',
+
+      `Nigeria’s transmission capacity has risen materially — the network can now carry [more power than the country generates](/en/article/nigerias-grid-can-now-carry-more-power-than-the-country-generates), following work including the [Kwara](/en/article/icco-delivers-the-kwara-330-kv-transmission-substation) and [Nnewi](/en/article/icco-delivers-the-nnewi-800-mva-transmission-substation) substations. The binding constraint has moved to generation and distribution.`,
+
+      'Framed against an imported fuel shock, that is not an abstract infrastructure argument. Grid reliability is the closest thing Nigeria has to a domestic hedge against the price of oil.',
+
+      { rule: true },
+
+      'Growth forecasts, inflation figures and the quoted remarks are as reported from the World Bank’s Nigeria assessment presented on 8 April 2026, and from IMF and Central Bank of Nigeria statements. Figures have not been independently verified by Pressly, and forecasts are forecasts.',
     ],
   },
 ];

@@ -35,6 +35,8 @@ const KEEP = [
   'saudi-arabia-commits-58-7bn-to-its-transmission-backbone-through-2030',
   'nigerias-grid-can-now-carry-more-power-than-the-country-generates',
   'the-world-bank-returns-to-syrias-grid-with-a-146m-emergency-grant',
+  'the-oil-shock-measured-what-hormuz-did-to-the-price-of-everything',
+  'nigeria-exports-oil-and-imports-inflation',
 ];
 
 function assertLocal(url: string | undefined) {
