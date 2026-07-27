@@ -73,7 +73,8 @@
     "organisation": "Organisation",
     "follow": "Folgen",
     "rss": "RSS-Feed",
-    "rights": "© {year} Pressly. Alle Rechte vorbehalten."
+    "rights": "© {year} Pressly. Alle Rechte vorbehalten.",
+    "glossary": "Glossar"
   },
   "pages": {
     "aboutTitle": "Über Pressly",
@@ -85,6 +86,16 @@
     "contactTitle": "Kontakt",
     "contactBody1": "Für Anfragen, Themenhinweise und Korrekturen wenden Sie sich an die Redaktion.",
     "contactBody2": "Wenn Sie einen Fehler melden, nennen Sie uns bitte die Überschrift und worum es geht — wir prüfen das."
+  },
+  "glossary": {
+    "title": "Glossar",
+    "intro": "Das Vokabular der Hochspannungsübertragung, erklärt in den Begriffen, die in der Berichterstattung von Pressly vorkommen. Jeder Eintrag verweist auf die Projekte, in denen er auftaucht.",
+    "description": "Definitionen von Begriffen aus Hochspannungsübertragung und Umspannwerken — OPGW, Trag- und Abspannmasten, Sammelschienen, Felder, Drosselspulen, SCADA.",
+    "contents": "Inhalt",
+    "appearsIn": "Erscheint in",
+    "alsoKnown": "Auch",
+    "languageNote": "Die Definitionen werden auf Englisch veröffentlicht.",
+    "backToContents": "Zurück zum Inhalt"
   },
   "common": {
     "loading": "Wird geladen…",

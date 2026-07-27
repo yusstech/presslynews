@@ -39,6 +39,7 @@ export function SiteFooter() {
         <FooterColumn title={t('organisation')}>
           <FooterLink href="/about">{t('about')}</FooterLink>
           <FooterLink href="/editorial-standards">{t('editorial')}</FooterLink>
+          <FooterLink href="/glossary">{t('glossary')}</FooterLink>
           <FooterLink href="/contact">{t('contact')}</FooterLink>
         </FooterColumn>
 

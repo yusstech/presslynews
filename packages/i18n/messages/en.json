@@ -73,7 +73,8 @@
     "organisation": "Organisation",
     "follow": "Follow",
     "rss": "RSS feed",
-    "rights": "© {year} Pressly. All rights reserved."
+    "rights": "© {year} Pressly. All rights reserved.",
+    "glossary": "Glossary"
   },
   "pages": {
     "aboutTitle": "About Pressly",
@@ -85,6 +86,16 @@
     "contactTitle": "Contact",
     "contactBody1": "For newsroom enquiries, story tips and corrections, write to the editorial desk.",
     "contactBody2": "If you are reporting an error, tell us the headline and what is wrong, and we will look into it."
+  },
+  "glossary": {
+    "title": "Glossary",
+    "intro": "The vocabulary of high-voltage transmission, defined in the terms Pressly’s reporting uses. Each entry links to the projects where it appears.",
+    "description": "Definitions of high-voltage transmission and substation terms — OPGW, suspension and dead-end towers, busbars, bays, reactors, SCADA and more.",
+    "contents": "Contents",
+    "appearsIn": "Appears in",
+    "alsoKnown": "Also",
+    "languageNote": "Definitions are published in English.",
+    "backToContents": "Back to contents"
   },
   "common": {
     "loading": "Loading…",

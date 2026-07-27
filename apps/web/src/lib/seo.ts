@@ -43,6 +43,21 @@ export function localizedMetadata(locale: Locale, path: string) {
 }
 
 /**
+ * One canonical at `/en`, for a standing page whose *body* is English in every
+ * locale — the glossary being the case that exists.
+ *
+ * The same reasoning as an article, arrived at from the other direction. A
+ * listing page is translated and so self-canonicalises; an article is not and
+ * so consolidates. The glossary's chrome is translated but its definitions are
+ * not, and the definitions are the page. Four URLs serving one set of English
+ * definitions are duplicates, so they consolidate on the English one rather
+ * than claiming, via hreflang, translations that do not exist.
+ */
+export function englishCanonical(path: string) {
+  return { alternates: { canonical: abs(`/en${path}`) } };
+}
+
+/**
  * One canonical for an article, in the language the article is written in —
  * regardless of which locale the reader arrived through.
  */
@@ -80,6 +95,54 @@ export function siteJsonLd() {
         url: base,
         publisher: { '@id': `${base}/#organization` },
         inLanguage: 'en',
+      },
+    ],
+  };
+}
+
+/**
+ * `DefinedTermSet` for the glossary, plus one `DefinedTerm` per entry.
+ *
+ * Each term gets its own `@id` at the anchor it renders behind, which is the
+ * part that earns its keep: it gives a consumer a citable address for a single
+ * definition rather than for a 40-term page, and it matches the fragment an
+ * article body links to. `inDefinedTermSet` points back at the set so the terms
+ * resolve as one vocabulary instead of forty unrelated nodes.
+ */
+export function glossaryJsonLd(
+  terms: Array<{ slug: string; term: string; definition: string }>,
+  opts: { name: string; description: string },
+) {
+  const url = abs('/en/glossary');
+  const setId = `${url}#glossary`;
+
+  return {
+    '@context': 'https://schema.org',
+    '@graph': [
+      {
+        '@type': 'DefinedTermSet',
+        '@id': setId,
+        name: opts.name,
+        description: opts.description,
+        url,
+        inLanguage: 'en',
+        publisher: { '@id': `${siteUrl()}/#organization` },
+        hasDefinedTerm: terms.map((t) => ({
+          '@type': 'DefinedTerm',
+          '@id': `${url}#${t.slug}`,
+          name: t.term,
+          description: t.definition,
+          url: `${url}#${t.slug}`,
+          inDefinedTermSet: { '@id': setId },
+        })),
+      },
+      {
+        '@type': 'BreadcrumbList',
+        '@id': `${url}#breadcrumbs`,
+        itemListElement: [
+          { '@type': 'ListItem', position: 1, name: ORG_NAME, item: abs('/en') },
+          { '@type': 'ListItem', position: 2, name: opts.name, item: url },
+        ],
       },
     ],
   };

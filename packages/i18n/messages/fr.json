@@ -73,7 +73,8 @@
     "organisation": "Organisation",
     "follow": "Suivre",
     "rss": "Flux RSS",
-    "rights": "© {year} Pressly. Tous droits réservés."
+    "rights": "© {year} Pressly. Tous droits réservés.",
+    "glossary": "Glossaire"
   },
   "pages": {
     "aboutTitle": "À propos de Pressly",
@@ -85,6 +86,16 @@
     "contactTitle": "Contact",
     "contactBody1": "Pour toute demande, proposition de sujet ou correction, écrivez à la rédaction.",
     "contactBody2": "Si vous signalez une erreur, indiquez-nous le titre concerné et la nature du problème, et nous l'examinerons."
+  },
+  "glossary": {
+    "title": "Glossaire",
+    "intro": "Le vocabulaire du transport d’électricité à haute tension, défini dans les termes qu’emploient les articles de Pressly. Chaque entrée renvoie aux projets où elle apparaît.",
+    "description": "Définitions des termes du transport à haute tension et des postes électriques — OPGW, pylônes d’alignement et d’ancrage, jeux de barres, travées, réactances, SCADA.",
+    "contents": "Sommaire",
+    "appearsIn": "Apparaît dans",
+    "alsoKnown": "Aussi",
+    "languageNote": "Les définitions sont publiées en anglais.",
+    "backToContents": "Retour au sommaire"
   },
   "common": {
     "loading": "Chargement…",

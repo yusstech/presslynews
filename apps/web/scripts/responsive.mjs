@@ -186,6 +186,11 @@ if (articleSlug) {
     await page.close();
   }
 }
+// The glossary's index is a wrapping list of 45 inline links — the densest set
+// of small touch targets on the site, and the layout most likely to overflow.
+await sweep('/en/glossary', 'glossary');
+await sweep('/ar/glossary', 'glossary (RTL)');
+
 await sweep('/en/newsroom/login', 'newsroom login', { expectSectionNav: false });
 
 await browser.close();

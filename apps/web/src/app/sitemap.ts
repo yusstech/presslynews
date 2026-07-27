@@ -62,6 +62,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     });
   }
+  // The glossary appears once, for the same reason articles do: its definitions
+  // are English at every locale prefix, so `/ar/glossary` canonicalises to the
+  // English URL rather than declaring itself a translation of it.
+  entries.push({ url: `${base}/en/glossary`, priority: 0.5 });
+
   for (const country of countries) {
     add(`/country/${country.code}`, undefined, 0.5);
   }

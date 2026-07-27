@@ -17,6 +17,11 @@ const PAGES = [
   ['newsroom login', `${BASE}/en/newsroom/login`],
   ['forgot password', `${BASE}/en/newsroom/forgot-password`],
   ['reset password', `${BASE}/en/newsroom/reset-password?token=abc`],
+  // Appended, not inserted — PAGES[2] is resolved by index below.
+  ['glossary', `${BASE}/en/glossary`],
+  // The glossary is the one page whose body stays English inside RTL chrome,
+  // so it is worth auditing in Arabic specifically.
+  ['glossary (ar, RTL)', `${BASE}/ar/glossary`],
 ];
 
 const TAGS = ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'];
