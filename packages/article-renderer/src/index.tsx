@@ -240,7 +240,19 @@ function applyMarks(text: string, marks?: Mark[]): ReactNode {
             href={mark.attrs?.href}
             target={mark.attrs?.target}
             rel={mark.attrs?.rel ?? 'noopener noreferrer'}
-            className="text-accent underline decoration-border underline-offset-2 hover:decoration-accent"
+            /**
+             * The underline was `decoration-border` — #E8E8E8 on a #FAFAF8
+             * page, i.e. invisible — and `text-accent` (#16213E) is so close to
+             * body ink (#111111) that colour alone distinguished nothing. A
+             * reader could not find the citations in an article at all, which
+             * is also a WCAG 1.4.1 failure: a link in running text has to be
+             * identifiable by something other than colour.
+             *
+             * The accent is the right hue — Project Atlas reserves it for
+             * interactive elements, and a citation is one — it just has to be
+             * on the underline, where it can be seen.
+             */
+            className="text-accent underline decoration-accent/45 decoration-2 underline-offset-2 transition-colors duration-fast ease-editorial hover:decoration-accent"
           >
             {acc}
           </a>

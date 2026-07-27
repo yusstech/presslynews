@@ -118,31 +118,23 @@ export default async function ArticlePage({
 
         {article.heroImage && (
           <Container className="animate-rise stagger mt-8" style={{ '--stagger': 1 } as CSSProperties}>
-            <figure>
-              {/* Was serving `original` — the untouched upload — to every reader
-                  on every device. It is also the LCP element here. */}
-              <MediaImage
-                variants={article.heroImage.variants}
-                src={article.heroImage.variants.large ?? article.heroImage.variants.original}
-                sizes={SIZES.articleHero}
-                alt={article.heroImage.alt ?? ''}
-                priority
-                className="mx-auto max-h-[560px] w-full max-w-content rounded-xl object-cover"
-              />
-              {/* A picture on a page of verified facts has to say what it is.
-                  Without this the credit and any "illustrative, not the subject"
-                  note sit in the database where no reader can see them. */}
-              {(article.heroImage.caption || article.heroImage.photographer) && (
-                <figcaption className="mx-auto mt-3 flex max-w-content flex-wrap items-baseline gap-x-3 gap-y-1 font-sans text-caption text-ink-muted">
-                  {article.heroImage.caption && <span>{article.heroImage.caption}</span>}
-                  {article.heroImage.photographer && (
-                    <span className="font-mono text-meta uppercase tracking-widest">
-                      {article.heroImage.photographer}
-                    </span>
-                  )}
-                </figcaption>
-              )}
-            </figure>
+            {/* No caption or credit under the hero, at the client's direction.
+                Both are still recorded on the `Media` row — `caption` carries
+                the "illustrative, not the subject" note and `photographer` the
+                attribution — so provenance survives in the data even though the
+                page does not show it. The alt text still describes the image
+                for anyone who cannot see it.
+
+                Was serving `original` — the untouched upload — to every reader
+                on every device. It is also the LCP element here. */}
+            <MediaImage
+              variants={article.heroImage.variants}
+              src={article.heroImage.variants.large ?? article.heroImage.variants.original}
+              sizes={SIZES.articleHero}
+              alt={article.heroImage.alt ?? ''}
+              priority
+              className="mx-auto max-h-[560px] w-full max-w-content rounded-xl object-cover"
+            />
           </Container>
         )}
 
