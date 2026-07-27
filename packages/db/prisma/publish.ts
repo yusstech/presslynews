@@ -62,8 +62,17 @@ export interface StoryInput {
   seoTitle?: string;
   /** The `<meta name="description">`. Around 155 characters before truncation. */
   metaDescription?: string;
-  /** Local file path or https URL. Omit for a story with no picture. */
+  /**
+   * Local file path or https URL. Omit for a story with no picture.
+   *
+   * Ignored when the story already has a hero image — re-running this script to
+   * edit a body is routine, and re-ingesting the source every time would upload
+   * a fresh copy to Cloudinary and orphan the previous one on each run. Set
+   * `replaceImage` to actually swap the picture.
+   */
   image?: string;
+  /** Re-ingest `image` even though the story already has a hero. */
+  replaceImage?: boolean;
   imageAlt?: string;
   imageCredit?: string;
   /**
@@ -258,8 +267,18 @@ export async function publishStory(prisma: PrismaClient, story: StoryInput) {
   if (story.topic && !topic) throw new Error(`No topic "${story.topic}" — run db:seed:taxonomy`);
   if (story.country && !country) throw new Error(`No country "${story.country}"`);
 
-  let heroImageId: string | undefined;
-  if (story.image) {
+  const slug = slugify(story.headline);
+  const existing = await prisma.article.findUnique({
+    where: { slug },
+    select: { heroImageId: true },
+  });
+
+  // Keep the hero the story already has. Editing a published body means running
+  // this script again, and ingesting the source each time would upload a
+  // duplicate to Cloudinary and leave the previous Media row orphaned — once
+  // per re-run, silently.
+  let heroImageId = existing?.heroImageId ?? undefined;
+  if (story.image && (!heroImageId || story.replaceImage)) {
     const media = await createMedia(prisma, await readSource(story.image), story, author?.id);
     heroImageId = media.id;
   }
@@ -270,7 +289,6 @@ export async function publishStory(prisma: PrismaClient, story: StoryInput) {
   }
   const scheduled = when.getTime() > Date.now();
 
-  const slug = slugify(story.headline);
   const data = {
     workingTitle: story.headline,
     headline: story.headline,
@@ -419,7 +437,7 @@ const STORIES: StoryInput[] = [
 
       'At each tower position, crews had to excavate the site, install reinforcement and set the tower-base components accurately before concrete was placed. The foundations then needed enough time to gain strength before the steel structures could be erected.',
 
-      'Accuracy at this stage was essential. A small positioning error at the base becomes more difficult to correct as a lattice tower rises. The foundations also have to carry the weight of the structure, withstand conductor tension and resist the forces created by wind and operating conditions.',
+      'Accuracy at this stage was essential. A small positioning error at the base becomes more difficult to correct as a [lattice tower](/en/glossary#lattice-tower) rises. The foundations also have to carry the weight of the structure, withstand conductor tension and resist the forces created by wind and operating conditions.',
 
       'The towers dominate the completed landscape, but their stability depends on civil work that is largely hidden from view.',
 
@@ -442,12 +460,12 @@ const STORIES: StoryInput[] = [
         },
       },
 
-      'Suspension towers formed most of the corridor, carrying conductors through relatively straight sections. Angle towers were used where the line changed direction; the greater the turn, the greater the forces transferred to the tower and its foundation. Dead-end towers anchored the conductor system at terminal points and other locations where the full line tension had to be restrained.',
+      '[Suspension towers](/en/glossary#suspension-tower) formed most of the corridor, carrying conductors through relatively straight sections. [Angle towers](/en/glossary#angle-tower) were used where the line changed direction; the greater the turn, the greater the forces transferred to the tower and its foundation. [Dead-end towers](/en/glossary#dead-end-tower) anchored the conductor system at terminal points and other locations where the full line tension had to be restrained.',
 
       // A definition written as its own sentence, in the form "X is a Y that
       // does Z" — the shape a retrieval model can lift without the surrounding
       // paragraph coming with it.
-      'The 19 transposition towers served a different purpose. A transposition tower is a structure that changes the relative positions of the three phases along a transmission route. Over a long three-phase line each phase may otherwise occupy a different physical position relative to the others, creating small differences in electrical impedance. Rotating the phases balances those characteristics across the complete line.',
+      'The 19 [transposition towers](/en/glossary#transposition-tower) served a different purpose. A transposition tower is a structure that changes the relative positions of the three phases along a transmission route. Over a long three-phase line each phase may otherwise occupy a different physical position relative to the others, creating small differences in electrical impedance. Rotating the phases balances those characteristics across the complete line.',
 
       'It is a feature most people would never notice from the ground, but it contributes directly to the line’s performance.',
 
@@ -455,7 +473,7 @@ const STORIES: StoryInput[] = [
 
       'Once a continuous section of towers had been erected and inspected, conductor installation could begin.',
 
-      'The Tabuk line uses a double-circuit, quad-bundle configuration. A quad bundle means each of the three phases in a circuit is carried by four sub-conductors rather than one, which reduces electrical losses and corona at 380 kV. Across the route, the scheduled phase-conductor quantity was approximately 2,781 kilometres.',
+      'The Tabuk line uses a [double-circuit](/en/glossary#double-circuit), quad-bundle configuration. A [quad bundle](/en/glossary#bundled-conductor) means each of the three phases in a circuit is carried by four sub-conductors rather than one, which reduces electrical losses and corona at 380 kV. Across the route, the scheduled phase-conductor quantity was approximately 2,781 kilometres.',
 
       'The conductors had to be pulled through successive spans under controlled tension. Their final sag and position had to remain within design limits while maintaining safe clearances from roads, utilities, existing lines and the ground below.',
 
@@ -472,7 +490,7 @@ const STORIES: StoryInput[] = [
         ],
       },
 
-      'Spacer dampers maintain the correct separation between the four sub-conductors in each bundle. Vibration dampers reduce repeated wind-driven movement that could damage conductor strands and fittings over time. These components are far smaller than the towers, but the line’s long-term reliability depends on them.',
+      '[Spacer dampers](/en/glossary#spacer-damper) maintain the correct separation between the four sub-conductors in each bundle. [Vibration dampers](/en/glossary#vibration-damper) reduce repeated wind-driven movement that could damage conductor strands and fittings over time. These components are far smaller than the towers, but the line’s long-term reliability depends on them.',
 
       { h2: 'Thirty-four crossings along the route' },
 
@@ -488,7 +506,7 @@ const STORIES: StoryInput[] = [
 
       'The Tabuk project was designed to carry both electricity and operational data.',
 
-      'Approximately 116 kilometres of Optical Ground Wire, known as OPGW, were installed above the phase conductors, alongside a similar length of conventional earthwire. OPGW is a cable that serves two functions at once: its outer structure helps shield the line from direct lightning strikes, while fibre-optic strands inside it carry protection, control and communication data between different parts of the transmission network.',
+      'Approximately 116 kilometres of Optical Ground Wire, known as [OPGW](/en/glossary#opgw), were installed above the phase conductors, alongside a similar length of conventional earthwire. OPGW is a cable that serves two functions at once: its outer structure helps shield the line from direct lightning strikes, while fibre-optic strands inside it carry protection, control and communication data between different parts of the transmission network.',
 
       'Those fibre links support line monitoring, fault detection and the rapid exchange of protection signals. A transmission line must not only carry electricity; it must also be monitored and controlled as part of the wider grid. The Tabuk corridor therefore operates as both a power connection and a communications route.',
 
@@ -590,7 +608,7 @@ const STORIES: StoryInput[] = [
 
       { h2: 'The contract the Ministry of Energy awarded' },
 
-      `The [Ministry of Energy](${MOE_SA}) issued its letter of award on 1 August 2021, and the contract took effect on 12 August. It covered engineering, procurement and construction in full: detailed design, supply and transportation of materials, civil works, tower manufacture and erection, conductor tensioning, OPGW and fibre-optic installation, protection and communication systems, testing, and connection to the national grid.`,
+      `The [Ministry of Energy](${MOE_SA}) issued its letter of award on 1 August 2021, and the contract took effect on 12 August. It covered [engineering, procurement and construction](/en/glossary#epc) in full: detailed design, supply and transportation of materials, civil works, tower manufacture and erection, conductor tensioning, OPGW and fibre-optic installation, protection and communication systems, testing, and connection to the national grid.`,
 
       'A single contractor carrying that whole chain is what allows scopes as different as topographical survey and fibre-optic commissioning to appear against one name.',
 
@@ -630,7 +648,7 @@ const STORIES: StoryInput[] = [
 
       'The 279 towers formed the physical route of the project, and different structures were used for different parts of the alignment.',
 
-      'Suspension towers carried the conductors through straighter sections of the route. Angle towers were used where the line changed direction and the structures had to resist the pull of conductors approaching from different sides. Terminal or dead-end towers anchored the conductor system at the ends of the line and at other positions where greater mechanical restraint was needed.',
+      '[Suspension towers](/en/glossary#suspension-tower) carried the conductors through straighter sections of the route. [Angle towers](/en/glossary#angle-tower) were used where the line changed direction and the structures had to resist the pull of conductors approaching from different sides. Terminal or [dead-end towers](/en/glossary#dead-end-tower) anchored the conductor system at the ends of the line and at other positions where greater mechanical restraint was needed.',
 
       'Together, these structures allowed the line to follow the approved alignment while maintaining the clearances and stability required for a 380 kV system.',
 
@@ -654,7 +672,7 @@ const STORIES: StoryInput[] = [
         ],
       },
 
-      'Insulators support the conductors while separating the live electrical system from the steel towers. Spacers maintain the required arrangement between bundled conductors. Vibration dampers reduce repeated wind-driven movement that could damage cables and fittings over time.',
+      '[Insulators](/en/glossary#insulator-string) support the conductors while separating the live electrical system from the steel towers. Spacers maintain the required arrangement between bundled conductors. Vibration dampers reduce repeated wind-driven movement that could damage cables and fittings over time.',
 
       'Individually, these components are far less visible than the towers. Collectively, they are essential to the line’s reliability.',
 
@@ -662,7 +680,7 @@ const STORIES: StoryInput[] = [
 
       'The Al-Jawf transmission corridor was built to carry both electricity and operational data.',
 
-      'Optical Ground Wire, commonly known as OPGW, runs above the phase conductors. OPGW is a cable that does two jobs at once: its outer structure performs the shielding role of a conventional earthwire, helping protect the line from direct lightning strikes, while fibre-optic strands inside it carry protection, control and communication data across the network.',
+      'Optical Ground Wire, commonly known as [OPGW](/en/glossary#opgw), runs above the phase conductors. OPGW is a cable that does two jobs at once: its outer structure performs the shielding role of a conventional earthwire, helping protect the line from direct lightning strikes, while fibre-optic strands inside it carry protection, control and communication data across the network.',
 
       'These fibre links support:',
 
@@ -854,7 +872,7 @@ const STORIES: StoryInput[] = [
         },
       },
 
-      'Suspension towers formed most of the line, carrying conductors through relatively straight sections. Corner towers were used where the alignment changed direction; these structures had to resist greater transverse forces created by conductors pulling from different angles.',
+      '[Suspension towers](/en/glossary#suspension-tower) formed most of the line, carrying conductors through relatively straight sections. Corner towers were used where the alignment changed direction; these structures had to resist greater transverse forces created by conductors pulling from different angles.',
 
       'Heavy-tension towers provided additional restraint at positions carrying higher mechanical loads. Terminal towers anchored the conductor system at the line ends, where the full tension of the circuits had to be contained.',
 
@@ -874,7 +892,7 @@ const STORIES: StoryInput[] = [
 
       'Once sufficient sections of the tower corridor had been completed and inspected, conductor installation could begin.',
 
-      'The line uses two 400 kV circuits, each made up of three electrical phases. Each phase was carried by a bundle of four sub-conductors, producing 24 conductor paths across the route. The project included approximately 2,568 kilometres of phase conductor.',
+      'The line uses two 400 kV circuits, each made up of three electrical phases. Each phase was carried by a [bundle of four sub-conductors](/en/glossary#bundled-conductor), producing 24 conductor paths across the route. The project included approximately 2,568 kilometres of phase conductor.',
 
       'Installing that quantity required controlled pulling and tensioning across successive tower spans. The conductors had to achieve their required sag while maintaining safe clearances from roads, services, the ground and other infrastructure.',
 
@@ -904,7 +922,7 @@ const STORIES: StoryInput[] = [
 
       { h2: 'Fibre-optic communications along the line' },
 
-      'The Rural Damascus–Daraa transmission corridor carries more than electrical power. Above the phase conductors run approximately 107 kilometres of conventional earthwire and a similar length of Optical Ground Wire, or OPGW.',
+      'The Rural Damascus–Daraa transmission corridor carries more than electrical power. Above the phase conductors run approximately 107 kilometres of conventional [earthwire](/en/glossary#earthwire) and a similar length of Optical Ground Wire, or [OPGW](/en/glossary#opgw).',
 
       'OPGW performs two functions. Its outer structure helps shield the line from direct lightning strikes, while fibre-optic strands within the cable carry protection, control and communication data between different parts of the network.',
 
@@ -1001,13 +1019,13 @@ const STORIES: StoryInput[] = [
     imageCredit: 'American Public Power Association / Unsplash',
     imageUsageRights: 'Unsplash License',
     body: [
-      `International Consolidated Contractors Offshore SAL designed and built a greenfield 330/132/33 kV transmission substation at Kwara State, Nigeria, for the [Rural Electrification Agency](${REA_NG}). The facility was completed and commissioned on 9 January 2025, with two 150 MVA power transformers, four 330 kV line bays, two 330 kV transformer bays and a 25–62 MVAr variable line reactor.`,
+      `International Consolidated Contractors Offshore SAL designed and built a [greenfield](/en/glossary#greenfield) 330/132/33 kV transmission substation at Kwara State, Nigeria, for the [Rural Electrification Agency](${REA_NG}). The facility was completed and commissioned on 9 January 2025, with two 150 MVA power transformers, four 330 kV line bays, two 330 kV transformer bays and a 25–62 MVAr variable line reactor.`,
 
       'Electricity enters the Kwara substation at 330 kilovolts.',
 
       'Before it can continue through lower-voltage networks, it passes through a chain of equipment designed to transform, measure, switch, protect and control it.',
 
-      'Four line bays provide the main entry and exit points. Two transformer bays connect the incoming high-voltage system to a pair of 150 MVA power transformers. A variable reactor manages voltage conditions on the network. Around them, circuit breakers, disconnectors, protection relays, fibre links, batteries and control systems remain ready to respond whenever operating conditions change.',
+      'Four [line bays](/en/glossary#bay) provide the main entry and exit points. Two transformer bays connect the incoming high-voltage system to a pair of 150 MVA power transformers. A variable reactor manages voltage conditions on the network. Around them, circuit breakers, disconnectors, [protection relays](/en/glossary#protection-relay), fibre links, batteries and control systems remain ready to respond whenever operating conditions change.',
 
       'The result is not simply a collection of large electrical equipment. It is one coordinated system.',
 
@@ -1019,11 +1037,11 @@ const STORIES: StoryInput[] = [
 
       'The bays allow operators to control individual connections without unnecessarily removing the entire substation from service. That separation is essential in a transmission network: a problem affecting one line should be isolated quickly and precisely, while unaffected equipment remains available wherever possible.',
 
-      'The line bays feed into the wider busbar arrangement, which provides the common electrical connection through which power is directed towards the transformers and other parts of the site.',
+      'The line bays feed into the wider [busbar](/en/glossary#busbar) arrangement, which provides the common electrical connection through which power is directed towards the transformers and other parts of the site.',
 
       { h2: 'Two transformers change the role of the electricity' },
 
-      'At the centre of the facility are two 150 MVA, 330/132/33 kV power transformers, together providing 300 MVA of installed transformation capacity.',
+      'At the centre of the facility are two 150 MVA, 330/132/33 kV [power transformers](/en/glossary#power-transformer), together providing 300 MVA of installed transformation capacity.',
 
       'Their task is to receive electricity at the transmission level and reduce it to voltages suitable for onward movement through other parts of the network. This is where the substation changes the role of the electricity: at 330 kV, power can be moved efficiently over long distances; at 132 kV and 33 kV, it can be directed into networks operating closer to regional and local demand.',
 
@@ -1035,7 +1053,7 @@ const STORIES: StoryInput[] = [
 
       'Most of the time, the substation’s high-voltage equipment allows electricity to flow. Its most important moments may come when that flow must be stopped.',
 
-      'Circuit breakers are designed to interrupt large fault currents within fractions of a second. Protection systems identify abnormal conditions and determine which breaker should operate. Disconnectors then provide visible isolation once the current has been interrupted. Surge arresters protect equipment from sudden voltage increases. Instrument transformers provide the measurements used by relays, control systems and meters. Busbars distribute power between the connected lines, transformers and reactor.',
+      '[Circuit breakers](/en/glossary#circuit-breaker) are designed to interrupt large fault currents within fractions of a second. Protection systems identify abnormal conditions and determine which breaker should operate. [Disconnectors](/en/glossary#disconnector) then provide visible isolation once the current has been interrupted. [Surge arresters](/en/glossary#surge-arrester) protect equipment from sudden voltage increases. [Instrument transformers](/en/glossary#instrument-transformer) provide the measurements used by relays, control systems and meters. Busbars distribute power between the connected lines, transformers and reactor.',
 
       'None of these devices works in isolation. A breaker is only useful if the protection system sends the correct command. A relay can only make the correct decision if its measurements are accurate. Operators can only understand the event if the communications and recording systems preserve what happened.',
 
@@ -1043,9 +1061,9 @@ const STORIES: StoryInput[] = [
 
       { h2: 'A reactor that responds to changing voltage' },
 
-      'The Kwara substation includes a 330 kV variable line reactor rated between 25 and 62 MVAr. Its role is different from that of the power transformers.',
+      'The Kwara substation includes a 330 kV [variable line reactor](/en/glossary#variable-line-reactor) rated between 25 and 62 MVAr. Its role is different from that of the power transformers.',
 
-      'Long transmission lines can generate excess reactive power, particularly when they are lightly loaded, which can push system voltage above the desired operating range. The reactor absorbs part of that reactive power.',
+      'Long transmission lines can generate excess [reactive power](/en/glossary#reactive-power), particularly when they are lightly loaded, which can push system voltage above the desired operating range. The reactor absorbs part of that reactive power.',
 
       'Because it is variable, its level of compensation can be adjusted as network conditions change. That gives operators greater control than a fixed reactor would provide. At one point in the day, the line may be carrying a high load; at another, demand may fall while the line remains energised. The reactor allows the network to respond to those changes without treating every operating condition as though it were the same.',
 
@@ -1055,7 +1073,7 @@ const STORIES: StoryInput[] = [
 
       'The largest objects on the site are outside. The decisions that control them are made through the substation automation and control systems.',
 
-      'The Kwara facility includes a complete Substation Automation System, SCADA, protection, metering, disturbance recording and telecommunications infrastructure.',
+      'The Kwara facility includes a complete [Substation Automation System](/en/glossary#substation-automation-system), [SCADA](/en/glossary#scada), protection, metering, disturbance recording and telecommunications infrastructure.',
 
       'SCADA gives operators a live view of the substation. It displays breaker positions, transformer loading, voltage measurements, alarms and other operating information, and it allows authorised commands to be issued remotely or from the control room.',
 
@@ -1173,7 +1191,7 @@ const STORIES: StoryInput[] = [
 
       'The defining feature of the Nnewi transmission substation is not a single transformer or switchyard. It is the number of options built into the facility.',
 
-      'Electricity can enter through multiple 330 kV line bays. It can be transformed through two 300 MVA autotransformers and two 100 MVA power transformers. It can be directed through 330 kV, 132 kV and 33 kV switchyards. Voltage conditions can be managed through fixed and variable reactor facilities. Protection, automation and telecommunications systems monitor the entire arrangement.',
+      'Electricity can enter through multiple 330 kV line bays. It can be transformed through two 300 MVA [autotransformers](/en/glossary#autotransformer) and two 100 MVA power transformers. It can be directed through 330 kV, 132 kV and 33 kV [switchyards](/en/glossary#switchyard). Voltage conditions can be managed through fixed and variable reactor facilities. Protection, automation and telecommunications systems monitor the entire arrangement.',
 
       'The result is a substation designed around capacity, flexibility and control.',
 
@@ -1207,13 +1225,13 @@ const STORIES: StoryInput[] = [
 
       'The ten 330 kV line bays give the station multiple high-voltage connection points, and the transformer bays connect the two 300 MVA autotransformers to the 330 kV system.',
 
-      'At 132 kV, the sectionalising bays allow the busbar to be divided into separate operating sections. This gives operators greater flexibility when carrying out maintenance or responding to a fault: one part of the switchyard can be isolated while another section remains available. At 33 kV, the bus coupler allows separate busbar sections to be connected or divided as required.',
+      'At 132 kV, the [sectionalising bays](/en/glossary#sectionalising-bay) allow the [busbar](/en/glossary#busbar) to be divided into separate operating sections. This gives operators greater flexibility when carrying out maintenance or responding to a fault: one part of the switchyard can be isolated while another section remains available. At 33 kV, the bus coupler allows separate busbar sections to be connected or divided as required.',
 
       'Across all three voltage levels, the switchyards give the facility a wide range of possible operating configurations.',
 
       { h2: 'Why the bays matter' },
 
-      'A substation bay is more than a physical space between steel structures. It is a controlled connection containing the equipment needed to switch, isolate, measure and protect a line, transformer or reactor.',
+      'A substation [bay](/en/glossary#bay) is more than a physical space between steel structures. It is a controlled connection containing the equipment needed to switch, isolate, measure and protect a line, transformer or reactor.',
 
       'The project included disconnect switches, grounding switches, post insulators, surge arresters and instrument transformers across the 330 kV, 132 kV and 33 kV systems.',
 
@@ -1223,7 +1241,7 @@ const STORIES: StoryInput[] = [
 
       { h2: 'Voltage control beyond the transformers' },
 
-      'The Nnewi substation includes both fixed and variable reactor facilities. A 75 MVAr shunt reactor provides a fixed level of reactive-power absorption, and two variable line reactors can operate between 25 and 62 MVAr.',
+      'The Nnewi substation includes both fixed and variable reactor facilities. A 75 MVAr [shunt reactor](/en/glossary#shunt-reactor) provides a fixed level of reactive-power absorption, and two variable line reactors can operate between 25 and 62 MVAr.',
 
       'High-voltage transmission lines can generate excess reactive power, particularly when they are lightly loaded, which can raise voltage beyond the desired operating range. Reactors absorb part of that reactive power.',
 
@@ -1233,9 +1251,9 @@ const STORIES: StoryInput[] = [
 
       'The project also included 330 kV line-in, line-out connection works.',
 
-      'A line-in, line-out arrangement — often shortened to LILO — allows an existing transmission line to be brought into a new substation and then returned to the wider route. Instead of constructing an entirely separate long-distance line, the existing circuit is diverted through the new facility.',
+      'A line-in, line-out arrangement — often shortened to [LILO](/en/glossary#lilo) — allows an existing transmission line to be brought into a new substation and then returned to the wider route. Instead of constructing an entirely separate long-distance line, the existing circuit is diverted through the new facility.',
 
-      'The Nnewi connection works included line-entry gantries, transmission-line structures, terminations, Optical Ground Wire interfaces and other associated equipment. The gantries provide the physical transition between the overhead line and the substation equipment. The line terminations connect the incoming conductors to the switchyard. OPGW interfaces carry the fibre-optic communication channels associated with the transmission line into the station’s protection and telecommunications systems.',
+      'The Nnewi connection works included line-entry [gantries](/en/glossary#gantry), transmission-line structures, terminations, Optical Ground Wire interfaces and other associated equipment. The gantries provide the physical transition between the overhead line and the substation equipment. The line terminations connect the incoming conductors to the switchyard. OPGW interfaces carry the fibre-optic communication channels associated with the transmission line into the station’s protection and telecommunications systems.',
 
       'This connection work placed the Nnewi substation within the operating network rather than leaving it as a standalone installation.',
 
@@ -1257,7 +1275,7 @@ const STORIES: StoryInput[] = [
 
       'IEC 61850 provides a standard framework for communication between intelligent electronic devices within a substation. Protection relays, bay-control units, meters and other equipment can exchange information over the station network rather than depending entirely on conventional point-to-point wiring.',
 
-      'SCADA gives operators a view of the site’s operating condition. It displays breaker and disconnector positions, transformer loading, voltage measurements, alarms and other information, and it allows authorised control commands to be issued from the station or a remote control centre.',
+      '[SCADA](/en/glossary#scada) gives operators a view of the site’s operating condition. It displays breaker and disconnector positions, transformer loading, voltage measurements, alarms and other information, and it allows authorised control commands to be issued from the station or a remote control centre.',
 
       'The National Control Centre interface extends that visibility beyond Nnewi, allowing the facility to be monitored as part of the wider transmission system.',
 
@@ -1291,7 +1309,7 @@ const STORIES: StoryInput[] = [
 
       { h2: 'Building the site around the equipment' },
 
-      'The Nnewi substation was developed with the complete civil and structural infrastructure required for operation, including reinforced-concrete foundations, control buildings, cable trenches and ducts, internal roads, drainage, transformer bund walls, oil-containment facilities, earthing grids, perimeter fencing, and steel gantries and busbar supports.',
+      'The Nnewi substation was developed with the complete civil and structural infrastructure required for operation, including reinforced-concrete foundations, control buildings, cable trenches and ducts, internal roads, drainage, transformer [bund walls](/en/glossary#bund-wall), oil-containment facilities, [earthing grids](/en/glossary#earthing-grid), perimeter fencing, and steel gantries and busbar supports.',
 
       'The foundations had to support transformers, switchgear, reactors and steel structures with different loading requirements. Cable trenches created organised routes for protection, control, metering and communication cables. Transformer bund walls and oil-containment facilities were designed to control the spread of insulating oil in the event of leakage or equipment failure. The earthing grid provided a controlled path for fault current while helping maintain safer voltage conditions across areas accessible to personnel.',
 
