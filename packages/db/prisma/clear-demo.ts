@@ -19,7 +19,7 @@
 import { PrismaClient } from '@prisma/client';
 
 /**
- * The real published stories: five project records and three market analyses.
+ * The real published stories: two project records and two market analyses.
  * Everything else in a dev database is noise.
  *
  * Kept in step with `STORIES` in publish.ts by hand — deriving it would mean
@@ -27,15 +27,9 @@ import { PrismaClient } from '@prisma/client';
  * in a module that also uploads media.
  */
 const KEEP = [
-  'samaya-group-completes-the-tabuk-380-kv-transmission-line',
-  'samaya-group-completes-the-al-jawf-380-kv-transmission-line',
-  'icco-completes-the-rural-damascus-daraa-400-kv-transmission-line',
   'icco-delivers-the-kwara-330-kv-transmission-substation',
   'icco-delivers-the-nnewi-800-mva-transmission-substation',
-  'saudi-arabia-commits-58-7bn-to-its-transmission-backbone-through-2030',
   'nigerias-grid-can-now-carry-more-power-than-the-country-generates',
-  'the-world-bank-returns-to-syrias-grid-with-a-146m-emergency-grant',
-  'the-oil-shock-measured-what-hormuz-did-to-the-price-of-everything',
   'nigeria-exports-oil-and-imports-inflation',
 ];
 

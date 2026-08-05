@@ -15,9 +15,6 @@
  * label behind.
  */
 
-const TABUK = 'samaya-group-completes-the-tabuk-380-kv-transmission-line';
-const AL_JAWF = 'samaya-group-completes-the-al-jawf-380-kv-transmission-line';
-const DARAA = 'icco-completes-the-rural-damascus-daraa-400-kv-transmission-line';
 const KWARA = 'icco-delivers-the-kwara-330-kv-transmission-substation';
 const NNEWI = 'icco-delivers-the-nnewi-800-mva-transmission-substation';
 
@@ -51,14 +48,12 @@ export const GLOSSARY: GlossarySection[] = [
         term: 'Transmission line',
         definition:
           'A transmission line is a high-voltage circuit that moves bulk electricity between generating stations, substations and regional networks over long distances. Higher voltage means less current for the same power, and less current means less energy lost as heat along the route — which is why long-distance transfer happens at 330 kV and above rather than at the voltages used closer to demand.',
-        seeAlso: [TABUK, AL_JAWF, DARAA],
       },
       {
         slug: 'phase-conductor',
         term: 'Phase conductor',
         definition:
           'A phase conductor is the cable that carries current along a transmission line. A three-phase circuit has three of them; a double-circuit line has six. Route length and conductor length are very different numbers as a result — a 112 km line can contain more than 2,700 km of phase conductor.',
-        seeAlso: [TABUK, DARAA],
       },
       {
         slug: 'bundled-conductor',
@@ -66,28 +61,24 @@ export const GLOSSARY: GlossarySection[] = [
         also: 'Quad bundle, sub-conductor',
         definition:
           'A conductor bundle is a group of smaller sub-conductors carrying a single phase in place of one large cable. A quad bundle uses four. Splitting the phase lowers electrical losses and suppresses corona — the discharge that forms around a conductor surface at high voltage, wasting energy and generating audible noise.',
-        seeAlso: [TABUK, DARAA],
       },
       {
         slug: 'double-circuit',
         term: 'Double-circuit line',
         definition:
           'A double-circuit line carries two independent three-phase circuits on the same towers. One set of structures and one right of way deliver twice the transfer capacity, at the cost of both circuits sharing a single point of physical failure.',
-        seeAlso: [TABUK, AL_JAWF, DARAA],
       },
       {
         slug: 'lattice-tower',
         term: 'Lattice tower',
         definition:
           'A lattice tower is a steel structure assembled on site from bolted angle sections rather than raised as a single fabricated column. It is the standard high-voltage form because it is strong for its weight, transportable in pieces, and can be built at positions no crane can reach.',
-        seeAlso: [TABUK, DARAA],
       },
       {
         slug: 'suspension-tower',
         term: 'Suspension tower',
         definition:
           'A suspension tower is a structure that carries conductors through a straight section of route — holding them up rather than holding them back. Its insulator strings hang vertically and the load it takes is mostly the weight of the spans either side. Most towers on a line are suspension towers.',
-        seeAlso: [TABUK, AL_JAWF, DARAA],
       },
       {
         slug: 'angle-tower',
@@ -95,7 +86,6 @@ export const GLOSSARY: GlossarySection[] = [
         also: 'Corner tower',
         definition:
           'An angle tower is a structure used where a line changes direction. Conductors pull on it from two different bearings, so it must resist a transverse force a suspension tower never sees — which is why angle positions need heavier structures and larger foundations than the straight sections around them.',
-        seeAlso: [TABUK, AL_JAWF, DARAA],
       },
       {
         slug: 'dead-end-tower',
@@ -103,35 +93,30 @@ export const GLOSSARY: GlossarySection[] = [
         also: 'Terminal tower, tension tower',
         definition:
           'A dead-end tower is a structure that anchors the conductor system rather than merely supporting it. Its insulator strings run horizontally and take the full longitudinal pull of the conductors. Dead-end towers sit at the ends of a line, at substation entries, and anywhere the route needs mechanical restraint — including as a limit on how far a failure can propagate along the line.',
-        seeAlso: [TABUK, AL_JAWF],
       },
       {
         slug: 'transposition-tower',
         term: 'Transposition tower',
         definition:
           'A transposition tower is a structure that rotates the relative positions of the three phases along a route. Each phase otherwise occupies the same physical position for the whole line and takes on a slightly different electrical impedance because of it; rotating them at intervals balances those characteristics across the complete circuit.',
-        seeAlso: [TABUK],
       },
       {
         slug: 'insulator-string',
         term: 'Insulator string',
         definition:
           'An insulator string is a chain of glass, porcelain or composite units that holds a conductor while keeping it electrically separated from the earthed steel of the tower. Its length is set by the line voltage and by how much dust, salt or industrial pollution the site collects — contamination on the surface is what lets a flashover cross an otherwise adequate insulator.',
-        seeAlso: [TABUK, AL_JAWF, DARAA],
       },
       {
         slug: 'spacer-damper',
         term: 'Spacer damper',
         definition:
           'A spacer damper is a fitting that holds the sub-conductors of a bundle at their designed separation while absorbing vibration between them. Without it the sub-conductors clash in wind, and the geometry the bundle depends on for its electrical behaviour stops being reliable.',
-        seeAlso: [TABUK, DARAA],
       },
       {
         slug: 'vibration-damper',
         term: 'Vibration damper',
         definition:
           'A vibration damper is a weight fitted near a conductor support point to absorb wind-induced oscillation. The movement is small and continuous; over years it fatigues conductor strands and fittings at the clamps, which is where a line that is otherwise sound eventually fails.',
-        seeAlso: [TABUK, AL_JAWF],
       },
       {
         slug: 'earthwire',
@@ -139,7 +124,6 @@ export const GLOSSARY: GlossarySection[] = [
         also: 'Shield wire, ground wire',
         definition:
           'An earthwire is an uncharged cable strung above the phase conductors to intercept lightning and carry it to ground through the towers, so a strike does not reach the live conductors. It carries no load current in normal operation.',
-        seeAlso: [AL_JAWF, DARAA],
       },
       {
         slug: 'opgw',
@@ -147,7 +131,7 @@ export const GLOSSARY: GlossarySection[] = [
         also: 'Optical Ground Wire',
         definition:
           'OPGW is a cable that does two jobs at once: its outer layers perform the shielding role of a conventional earthwire, while optical fibres inside it carry protection, control and communication data along the route. It is what allows a modern high-voltage line to be operated as part of a network rather than as an isolated physical connection.',
-        seeAlso: [TABUK, AL_JAWF, DARAA, NNEWI],
+        seeAlso: [NNEWI],
       },
       {
         slug: 'stringing',
@@ -155,7 +139,6 @@ export const GLOSSARY: GlossarySection[] = [
         also: 'Conductor tensioning, sag',
         definition:
           'Stringing is the operation of pulling conductors through erected towers and tensioning them to a designed sag. Sag is calculated, not slack: it must keep the conductor clear of the ground on the hottest day, when the metal expands and the span drops, without overstressing the structures on the coldest.',
-        seeAlso: [TABUK, DARAA],
       },
     ],
   },
@@ -264,7 +247,7 @@ export const GLOSSARY: GlossarySection[] = [
         term: 'Earthing grid',
         definition:
           'An earthing grid is a mesh of conductors buried beneath a substation that gives fault current a controlled path into the ground. It also keeps the voltage difference across the surface small enough to remain safe for anyone standing on it while a fault is being cleared.',
-        seeAlso: [DARAA, NNEWI],
+        seeAlso: [NNEWI],
       },
       {
         slug: 'bund-wall',
@@ -295,7 +278,7 @@ export const GLOSSARY: GlossarySection[] = [
         also: 'Kilovolt',
         definition:
           'A kilovolt is one thousand volts. Transmission networks are named by voltage — 330 kV, 380 kV, 400 kV — because voltage sets how much power a line can move and how far it can move it before losses make the route uneconomic.',
-        seeAlso: [TABUK, DARAA, KWARA],
+        seeAlso: [KWARA],
       },
       {
         slug: 'mva',
@@ -384,7 +367,7 @@ export const GLOSSARY: GlossarySection[] = [
         also: 'Engineering, procurement and construction',
         definition:
           'An EPC contract makes one contractor responsible for the whole chain — detailed design, buying and transporting materials, and building the facility. The client holds a single party accountable for something that works, rather than coordinating separate designers, suppliers and builders and owning the gaps between them.',
-        seeAlso: [TABUK, AL_JAWF, NNEWI],
+        seeAlso: [NNEWI],
       },
       {
         slug: 'greenfield',
@@ -405,7 +388,7 @@ export const GLOSSARY: GlossarySection[] = [
         term: 'Grid integration',
         definition:
           'Grid integration is the point at which a finished line or substation stops being a construction project and becomes part of an operating network — connected, energised, visible to the control centre and carrying load under the operator’s instruction.',
-        seeAlso: [AL_JAWF, KWARA],
+        seeAlso: [KWARA],
       },
     ],
   },

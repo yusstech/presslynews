@@ -8,14 +8,11 @@ import { ALL_TERMS, GLOSSARY } from '@/content/glossary';
  */
 
 /**
- * The five project records. Glossary entries point at these rather than at the
+ * The two project records. Glossary entries point at these rather than at the
  * market analyses, which cite the glossary rather than being cited by it — a
  * `seeAlso` outside this set is a typo.
  */
 const PUBLISHED = new Set([
-  'samaya-group-completes-the-tabuk-380-kv-transmission-line',
-  'samaya-group-completes-the-al-jawf-380-kv-transmission-line',
-  'icco-completes-the-rural-damascus-daraa-400-kv-transmission-line',
   'icco-delivers-the-kwara-330-kv-transmission-substation',
   'icco-delivers-the-nnewi-800-mva-transmission-substation',
 ]);
